@@ -1,0 +1,10 @@
+# Normalize to LF in the repository. Windows checkouts still get CRLF for
+# ordinary text files, but anything executed as a script must stay LF or the
+# shebang line breaks with "bad interpreter".
+* text=auto eol=lf
+
+.githooks/* text eol=lf
+*.sh text eol=lf
+
+# Keep generated lockfiles out of diffs and out of merge conflicts.
+package-lock.json linguist-generated=true merge=ours
