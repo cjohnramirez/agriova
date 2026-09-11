@@ -6,14 +6,18 @@
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@shopify/flash-list": "2.0.2",
+    "babel-preset-expo": "~57.0.0",
     "date-fns": "^4.4.0",
+    "drizzle-orm": "^0.45.2",
     "expo": "~57.0.21",
     "expo-constants": "~57.0.17",
+    "expo-crypto": "~57.0.2",
     "expo-glass-effect": "~57.0.2",
     "expo-linear-gradient": "~57.0.1",
     "expo-linking": "~57.0.9",
     "expo-localization": "~57.0.1",
     "expo-router": "~57.0.20",
+    "expo-sqlite": "~57.0.2",
     "expo-status-bar": "~57.0.1",
     "lucide-react-native": "^1.44.0",
     "react": "19.2.3",
@@ -27,6 +31,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "babel-plugin-inline-import": "^3.0.0",
+    "drizzle-kit": "^0.31.10",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -36,7 +42,11 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "bundle:check": "expo export --platform android --platform ios --output-dir .expo/bundle-check",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "db:generate": "drizzle-kit generate",
+    "verify:schema": "node --experimental-sqlite scripts/verify-schema.mjs",
+    "verify:units": "node --experimental-strip-types scripts/verify-units.mjs",
+    "verify": "npm run verify:schema && npm run verify:units && npm run typecheck"
   },
   "private": true
 }
