@@ -33,7 +33,10 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "bundle:check": "expo export --platform android --platform ios --output-dir .expo/bundle-check",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "private": true
 }
