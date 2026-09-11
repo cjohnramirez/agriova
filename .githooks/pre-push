@@ -1,0 +1,12 @@
+#!/bin/sh
+# Blocks a push that would put a type error on a shared branch.
+# Bypass with: git push --no-verify
+echo "pre-push: running TypeScript check..."
+if ! npx tsc --noEmit; then
+  echo ""
+  echo "pre-push: TypeScript check failed. Push blocked."
+  echo "Fix the errors, or bypass with 'git push --no-verify' if this is urgent."
+  exit 1
+fi
+echo "pre-push: clean."
+exit 0
