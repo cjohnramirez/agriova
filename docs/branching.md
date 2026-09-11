@@ -11,6 +11,11 @@
 `main` moves only when a milestone is ready to demo or ship. Everything else
 flows through `dev`.
 
+`dev` is the repository's default branch on GitHub, so a fresh clone lands
+there and a pull request targets it unless you say otherwise. The `--base`
+flags below are still written out, because being explicit survives someone
+changing that setting later.
+
 ## Naming
 
 Use a type prefix, then a short kebab-case description. Keep it under about
