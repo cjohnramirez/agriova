@@ -50,6 +50,7 @@ const en = {
   meLanguage: 'Language',
 
   comingSoon: 'Being built',
+  dbErrorTitle: 'Your records could not be opened',
   offlineBanner: 'No signal. Your records are saved and will send later.',
 } as const;
 
@@ -83,15 +84,16 @@ const bis: Catalog = {
   homeEarningsEmpty: 'Isulat ang imong baligya ug makita nimo dinhi ang kita.',
 
   farmTitle: 'Akong uma',
-  farmEmpty: 'Wala pa\'y luna nga nasulat.',
+  farmEmpty: "Wala pa'y luna nga nasulat.",
 
   marketTitle: 'Tindahan',
-  marketEmpty: 'Wala pa\'y gibaligya.',
+  marketEmpty: "Wala pa'y gibaligya.",
 
   meTitle: 'Akong account',
   meLanguage: 'Pinulongan',
 
   comingSoon: 'Ginahimo pa',
+  dbErrorTitle: 'Dili maablihan ang datos',
   offlineBanner: 'Walay signal. Natipigan ang imong sinulat, ipadala ra unya.',
 };
 

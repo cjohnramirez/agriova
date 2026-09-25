@@ -1,0 +1,11 @@
+android/
+ios/
+drizzle/
+node_modules/
+.expo/
+dist/
+coverage/
+package-lock.json
+docs/
+.claude/
+*.md

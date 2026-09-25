@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { getLocales } from 'expo-localization';
 
-import { catalogs, LANGUAGES, type Language, type StringKey } from './strings';
+import { catalogs, type Language, type StringKey } from './strings';
 
 export { LANGUAGES, LANGUAGE_NAMES, type Language } from './strings';
 

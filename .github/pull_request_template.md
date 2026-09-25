@@ -11,8 +11,9 @@
 
 <!-- Steps a reviewer can actually follow on a device or simulator. -->
 
-- [ ] `npx tsc --noEmit` passes
-- [ ] `npx expo export --platform android --platform ios` bundles
+- [ ] `npm run verify` passes (typecheck, lint, format, tests); CI is green
+- [ ] New logic has tests; schema changes come with a regenerated migration
+- [ ] Checked on the emulator at 320dp and font scale 1.3 (see the `run-android` skill)
 - [ ] Tested on a physical Android device
 
 ## Accessibility floor

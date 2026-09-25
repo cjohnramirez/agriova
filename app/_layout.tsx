@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { DatabaseGate } from '@/db/DatabaseGate';
 import { I18nProvider } from '@/i18n';
 import { color } from '@/theme/tokens';
 
@@ -13,12 +14,14 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <I18nProvider>
           <StatusBar style="dark" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: color.background },
-            }}
-          />
+          <DatabaseGate>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: color.background },
+              }}
+            />
+          </DatabaseGate>
         </I18nProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
