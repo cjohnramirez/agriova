@@ -24,6 +24,10 @@ jobs:
           node-version: 22
           cache: npm
 
+      # The lockfile is written by npm 11. Node 22 bundles npm 10, which reads
+      # optional-peer entries differently and rejects the lockfile as out of sync.
+      - run: npm install -g npm@11
+
       - run: npm ci
 
       - name: Typecheck
