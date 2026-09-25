@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
 import migrations from '../../drizzle/migrations';
 import { db, seedReferenceData } from './client';
 import { useI18n } from '@/i18n';
-import { color, fontSize, fontWeight, layout, space } from '@/theme/tokens';
+import { color, layout, space } from '@/theme/tokens';
+import { Text } from '@/ui';
 
 /**
  * Holds the app back until the database is migrated and seeded.
@@ -35,8 +36,12 @@ export function DatabaseGate({ children }: { children: ReactNode }) {
   if (failure) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorTitle}>{t('dbErrorTitle')}</Text>
-        <Text style={styles.errorBody}>{failure.message}</Text>
+        <Text variant="heading" tone="onBrand" style={styles.center}>
+          {t('dbErrorTitle')}
+        </Text>
+        <Text variant="label" tone="onBrand" style={styles.center}>
+          {failure.message}
+        </Text>
       </View>
     );
   }
@@ -61,16 +66,5 @@ const styles = StyleSheet.create({
     padding: layout.screenPadding,
     gap: space.md,
   },
-  errorTitle: {
-    fontSize: fontSize.title,
-    fontWeight: fontWeight.bold,
-    color: color.textOnBrand,
-    textAlign: 'center',
-  },
-  errorBody: {
-    fontSize: fontSize.caption,
-    color: color.textOnBrand,
-    opacity: 0.85,
-    textAlign: 'center',
-  },
+  center: { textAlign: 'center' },
 });

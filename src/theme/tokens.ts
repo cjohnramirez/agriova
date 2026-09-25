@@ -1,62 +1,97 @@
+import type { TextStyle } from 'react-native';
+
 /**
  * Design tokens for Agriova.
  *
- * Colors are sampled from the existing Figma prototype so the visual language
- * carries over. Type and spacing scales deliberately do NOT carry over: the
- * prototype sets most body copy at roughly 8-9px, which is unreadable for the
- * target user (average age 57, about 8 years of schooling, working outdoors in
- * sunlight). The floors below are the correction.
+ * Colors, radii and the typeface come from the Figma "Unified Design" prototype
+ * so the visual language carries over. The type scale deliberately does NOT:
+ * the prototype sets most copy at 11px, which is unreadable for the target user
+ * (average age 57, about 8 years of schooling, working outdoors in sunlight).
+ * The floors below are the correction.
  */
 
 export const color = {
-  /** Deep green used for the hero and feature cards, as a gradient pair. */
+  /** Deep green for the hero and feature cards. Gradient start. */
   brandDark: '#123F2E',
   brand: '#184933',
   brandLight: '#215335',
-  /** Accent green from the active tab and status pills. */
+  /** Gradient end of the green cards, sampled from the prototype render. */
+  brandGlow: '#548E3D',
+  /** Accent green from the active tab, chips and figures on white. */
   accent: '#1A4A01',
   /** Brighter green reserved for primary actions, for contrast against white. */
   action: '#2E7D32',
   actionPressed: '#24642A',
+  /** Tint behind a selected chip or tab, so selection never relies on color alone. */
+  accentSoft: '#E6EFE3',
 
   surface: '#FFFFFF',
   background: '#F7F7F7',
   border: '#ECECEC',
+  /** Translucent white for chips and dividers sitting on a green or red card. */
+  onBrandSoft: 'rgba(255,255,255,0.15)',
 
   text: '#1F1F1F',
-  textMuted: '#7F7F7F',
+  textMuted: '#6B6B6B',
   textFaint: '#A8A8A8',
   textOnBrand: '#FFFFFF',
 
   danger: '#A02C1A',
-  dangerLight: '#C4422E',
+  /**
+   * Warning card gradient end. The prototype's #BD3E2A to #EC5A44 fails 4.5:1
+   * for white body text by mid-card; this pair holds it to three quarters.
+   */
+  dangerGlow: '#D9503A',
   warning: '#E8A13A',
   /** Calm blue-grey for the offline banner. Offline is not an error state. */
   info: '#4A5B6A',
 } as const;
 
-/**
- * Minimum 18 for anything a farmer must read. `caption` is the smallest size in
- * the system and exists only for non-essential labels; it must never carry a
- * peso amount, a date, or a quantity.
- */
-export const fontSize = {
-  caption: 15,
-  body: 18,
-  bodyLarge: 20,
-  title: 24,
-  heading: 28,
-  /** Peso figures and quantities. The number is the product. */
-  figure: 40,
-  figureHero: 52,
+/** Gradient pairs for `GradientCard`. Top-left to bottom-right, as in Figma. */
+export const gradient = {
+  brand: [color.brandDark, color.brandGlow],
+  danger: [color.danger, color.dangerGlow],
 } as const;
 
-export const fontWeight = {
-  regular: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
+export type GradientName = keyof typeof gradient;
+
+/**
+ * Geist, the prototype's typeface. Each weight is its own family because
+ * Android cannot synthesise weights for a custom font; `fontWeight` is never
+ * set alongside these.
+ */
+export const font = {
+  regular: 'Geist_400Regular',
+  medium: 'Geist_500Medium',
+  semibold: 'Geist_600SemiBold',
+  bold: 'Geist_700Bold',
 } as const;
+
+/**
+ * The type ramp. Minimum 18 for anything a farmer must read. `label` is the
+ * smallest style in the system and exists only for non-essential text; it must
+ * never carry a peso amount, a date, or a quantity.
+ *
+ * Line heights sit around 1.3x so wrapped Bisaya, which runs longer than the
+ * English the prototype was drawn with, stays readable.
+ */
+export const type = {
+  /** The peso total on the home hero. The number is the product. */
+  display: { fontFamily: font.bold, fontSize: 52, lineHeight: 60 },
+  /** Peso figures and quantities inside cards. */
+  figure: { fontFamily: font.semibold, fontSize: 40, lineHeight: 48 },
+  /** Screen titles. */
+  title: { fontFamily: font.bold, fontSize: 28, lineHeight: 36 },
+  /** Section titles and card headings. */
+  heading: { fontFamily: font.semibold, fontSize: 22, lineHeight: 28 },
+  /** Emphasised body: list item titles, button labels. */
+  bodyStrong: { fontFamily: font.medium, fontSize: 18, lineHeight: 24 },
+  body: { fontFamily: font.regular, fontSize: 18, lineHeight: 24 },
+  /** Chips, captions, tab labels. Never essential information. */
+  label: { fontFamily: font.medium, fontSize: 15, lineHeight: 20 },
+} as const satisfies Record<string, TextStyle>;
+
+export type TypeVariant = keyof typeof type;
 
 export const space = {
   xs: 4,
@@ -67,11 +102,12 @@ export const space = {
   xxl: 32,
 } as const;
 
+/** Figma uses 20 for cards and 10 for elements inside them. */
 export const radius = {
   sm: 8,
-  md: 12,
+  md: 10,
   lg: 16,
-  xl: 24,
+  card: 20,
   pill: 999,
 } as const;
 
@@ -83,5 +119,10 @@ export const radius = {
 export const layout = {
   minTouch: 56,
   screenPadding: space.lg,
-  tabBarHeight: 68,
+  /** Content stops growing here on tablets, so lines stay a readable length. */
+  maxContentWidth: 600,
+  /** Below this width, two-up tiles stack into one column. */
+  narrowWidth: 380,
+  /** Scroll content ends this far above the screen bottom, clearing the tab bar. */
+  tabBarClearance: 96,
 } as const;

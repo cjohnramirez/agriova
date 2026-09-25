@@ -18,7 +18,13 @@ module.exports = {
       displayName: 'ui',
       preset: 'jest-expo',
       testMatch: ['<rootDir>/src/**/*.test.tsx', '<rootDir>/app/**/*.test.tsx'],
-      moduleNameMapper,
+      moduleNameMapper: {
+        ...moduleNameMapper,
+        // The react-native export condition points at an .mjs build that Jest
+        // does not transform; the package's CommonJS build is equivalent.
+        '^lucide-react-native$':
+          '<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js',
+      },
     },
   ],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.test.{ts,tsx}'],

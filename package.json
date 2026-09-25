@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo-google-fonts/geist": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@shopify/flash-list": "2.0.2",
@@ -60,7 +61,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "jest",
-    "test:ci": "jest --ci --coverage"
+    "test:ci": "jest --ci --coverage",
+    "gen:brand": "node scripts/gen-brand.mjs"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=22",
+    "npm": ">=11"
+  }
 }
