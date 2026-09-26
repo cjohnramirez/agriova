@@ -1,3 +1,4 @@
+import { Flag } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { cropName, type CycleSummary } from '@/db/read';
@@ -6,10 +7,17 @@ import { useI18n } from '@/i18n';
 import { formatDate } from '@/i18n/dates';
 import { statusLabel } from '@/i18n/labels';
 import { color, space } from '@/theme/tokens';
-import { Chip, Text } from '@/ui';
+import { Button, Chip, Text } from '@/ui';
 
 /** One planting: crop, status, planting date, and what it has earned so far. */
-export function CycleRow({ cycle }: { cycle: CycleSummary }) {
+export function CycleRow({
+  cycle,
+  onClose,
+}: {
+  cycle: CycleSummary;
+  /** Offered on open plantings: ends the season after a confirm. */
+  onClose?: () => void;
+}) {
   const { t, language } = useI18n();
   const growing = cycle.status === 'growing';
 
@@ -29,12 +37,21 @@ export function CycleRow({ cycle }: { cycle: CycleSummary }) {
       <Text tone={cycle.netCentavos < 0 ? 'danger' : 'accent'} numeric>
         {t('fieldsEarnings')} {formatPesos(cycle.netCentavos)}
       </Text>
+      {onClose ? (
+        <Button variant="secondary" icon={Flag} label={t('cycleClose')} onPress={onClose} />
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { gap: space.xs, paddingVertical: space.sm },
-  head: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: space.sm },
+  row: { gap: space.sm, paddingVertical: space.sm, alignItems: 'flex-start' },
+  head: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexWrap: 'wrap',
+    gap: space.sm,
+  },
   flex: { flexGrow: 1 },
 });

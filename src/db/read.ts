@@ -116,6 +116,9 @@ export function runningTotal(values: readonly number[]): number[] {
 export type CycleSummary = CropName & {
   id: string;
   plotId: string;
+  plotName: string;
+  cropId: string;
+  defaultUnit: Unit;
   cropIcon: string;
   plantedOn: string;
   expectedHarvestOn: string | null;
@@ -141,13 +144,15 @@ export function listCycles(
 
   return db.all<CycleSummary>(
     `select
-       c.id, c.plot_id as plotId, c.planted_on as plantedOn,
+       c.id, c.plot_id as plotId, pl.name as plotName, c.crop_id as cropId,
+       cr.default_unit as defaultUnit, c.planted_on as plantedOn,
        c.expected_harvest_on as expectedHarvestOn, c.status,
        cr.name_bis as cropBis, cr.name_en as cropEn, cr.icon as cropIcon,
        p.revenue_centavos as revenueCentavos, p.expense_centavos as expenseCentavos,
        p.net_centavos as netCentavos
      from cycle c
      join crop cr on cr.id = c.crop_id
+     join plot pl on pl.id = c.plot_id
      join cycle_pnl p on p.cycle_id = c.id
      where c.owner_id = ? and c.deleted_at is null${filter}
      order by c.planted_on desc, c.created_at desc`,
@@ -192,6 +197,16 @@ export function getPlot(db: SqlReader, ownerId: string, plotId: string) {
     [ownerId, plotId],
   );
   return plot ?? null;
+}
+
+export type CropOption = CropName & { id: string; icon: string; defaultUnit: Unit };
+
+/** The crop list in its display order, for the planting form. */
+export function listCrops(db: SqlReader): CropOption[] {
+  return db.all<CropOption>(
+    `select id, name_bis as cropBis, name_en as cropEn, icon, default_unit as defaultUnit
+     from crop order by sort_order, name_en`,
+  );
 }
 
 // --- Ledger ---------------------------------------------------------------

@@ -5,6 +5,8 @@
  */
 import {
   addDays,
+  cleanDecimalInput,
+  parsePositive,
   addMonths,
   daysBetween,
   formatArea,
@@ -83,4 +85,17 @@ describe('area', () => {
   it('uses square metres below a hectare', () => expect(formatArea(2500)).toBe('2,500 m²'));
   it('uses whole hectares', () => expect(formatArea(20_000)).toBe('2 ha'));
   it('rounds hectares to one place', () => expect(formatArea(12_345)).toBe('1.2 ha'));
+});
+
+describe('typed input', () => {
+  it('keeps digits and one point', () => expect(cleanDecimalInput('1,2a0.5.6')).toBe('120.56'));
+  it('caps the decimals', () => expect(cleanDecimalInput('3.14159', 3)).toBe('3.141'));
+  it('drops leading zeros', () => expect(cleanDecimalInput('007')).toBe('7'));
+  it('starts a bare point with zero', () => expect(cleanDecimalInput('.5')).toBe('0.5'));
+  it('parses a positive number', () => expect(parsePositive('1,250.50')).toBe(1250.5));
+  it('rejects zero and blanks', () => {
+    expect(parsePositive('0')).toBeNull();
+    expect(parsePositive('')).toBeNull();
+    expect(parsePositive('.')).toBeNull();
+  });
 });

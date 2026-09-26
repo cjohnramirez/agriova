@@ -1,0 +1,88 @@
+# The core loop, end to end on a real device: a new farmer signs up, plants,
+# spends, harvests and sells, and Home shows the profit.
+#
+# ₱800 sold - ₱500 spent = ₱300.00. If this number is wrong, the product is.
+#
+# Run against a dev build with Metro on :8081 (see .maestro/README.md):
+#   maestro test .maestro/record-season.yaml
+appId: com.jcrrrr.farmerp
+name: Record a season
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      true: ${DEV_CLIENT == 'true'}
+    commands:
+      - openLink: agriova://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+
+# Onboarding, in English so the assertions read plainly.
+- extendedWaitUntil:
+    visible: English
+    timeout: 180000
+- tapOn: English
+- tapOn: Continue
+- tapOn: Mobile number
+- inputText: '9171234567'
+- tapOn: Continue
+- extendedWaitUntil:
+    visible: Enter the code
+    timeout: 10000
+- inputText: '123456'
+- tapOn: Confirm
+- tapOn: Your name
+- inputText: Nena Dela Cruz
+- tapOn: Barangay
+- inputText: Gusa
+- hideKeyboard
+- tapOn: Continue
+- tapOn: Plot name
+- inputText: Near the river
+- hideKeyboard
+- tapOn: Save plot
+
+# A new farmer starts at zero.
+- extendedWaitUntil:
+    visible: Your earnings this season
+    timeout: 10000
+- assertVisible: ₱0.00
+
+# Planting. The only plot is chosen for them.
+- tapOn: Record
+- tapOn: Planting.*
+- tapOn: Tomato
+- tapOn: Save
+
+# Expense.
+- tapOn: Record
+- tapOn: Expense.*
+- tapOn: Amount
+- inputText: '500'
+- hideKeyboard
+- tapOn: Seeds
+- tapOn: Save
+- assertVisible: -₱500.00
+
+# Harvest. Tomatoes default to kilos.
+- tapOn: Record
+- tapOn: Harvest.*
+- tapOn: How much
+- inputText: '10'
+- hideKeyboard
+- tapOn: Save
+
+# Sale, with the total shown before saving.
+- tapOn: Record
+- tapOn: Sale.*
+- tapOn: How much did you sell?
+- inputText: '10'
+- tapOn: Price per kg
+- inputText: '80'
+- hideKeyboard
+- assertVisible: Total ₱800.00
+- tapOn: Buyer directly
+- tapOn: Save
+
+- assertVisible: ₱300.00
+- assertVisible: Sold ₱800.00
+- assertVisible: Spent ₱500.00

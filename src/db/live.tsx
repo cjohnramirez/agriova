@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import type { SqlReader } from './read';
+import type { Clock, SqlDb } from './write';
 
 /**
  * Where screens read from, and how they learn that something changed. The app
@@ -17,6 +18,9 @@ import type { SqlReader } from './read';
  */
 export type DataSource = {
   reader: SqlReader;
+  /** Where the record forms write, with the clock that stamps ids and times. */
+  writer: SqlDb;
+  clock: Clock;
   /** Calls `onChange` after any write. Returns the unsubscribe. */
   subscribe: (onChange: () => void) => () => void;
 };
@@ -54,4 +58,11 @@ export function useLiveQuery<T>(read: (db: SqlReader) => T, deps: DependencyList
   const key = JSON.stringify(deps);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => read(source.reader), [source, version, key]);
+}
+
+/** The database and clock for the write helpers in `write.ts`. */
+export function useWriter(): { db: SqlDb; clock: Clock } {
+  const source = useContext(DataSourceContext);
+  if (!source) throw new Error('useWriter must be used inside DataSourceProvider');
+  return { db: source.writer, clock: source.clock };
 }

@@ -1,5 +1,5 @@
 import { cropName, type LedgerEntry } from '@/db/read';
-import type { CycleStatus, ExpenseCategory } from '@/db/schema';
+import type { CycleStatus, ExpenseCategory, SaleChannel } from '@/db/schema';
 import { formatPesos, formatQuantity } from '@/db/units';
 
 import type { Translate } from './index';
@@ -26,6 +26,17 @@ const STATUS: Record<CycleStatus, StringKey> = {
   harvested: 'statusHarvested',
   closed: 'statusClosed',
 };
+
+const CHANNEL: Record<SaleChannel, StringKey> = {
+  direct: 'channelDirect',
+  middleman: 'channelMiddleman',
+  marketplace: 'channelMarketplace',
+};
+
+export const channelLabel = (t: Translate, channel: SaleChannel) => t(CHANNEL[channel]);
+
+/** Every expense category, in the order the form offers them. */
+export const EXPENSE_CATEGORIES = Object.keys(CATEGORY) as ExpenseCategory[];
 
 export const categoryLabel = (t: Translate, category: ExpenseCategory) => t(CATEGORY[category]);
 

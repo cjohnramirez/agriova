@@ -25,8 +25,11 @@ export async function renderScreen(ui: ReactElement, { farm = true } = {}) {
   if (farm) seedDemoFarm(runnerFor(db), TEST_OWNER, todayLocal(), uuid);
 
   const listeners = new Set<() => void>();
+  let tick = Date.now();
   const source: DataSource = {
     reader: readerFor(db),
+    writer: runnerFor(db),
+    clock: { now: () => ++tick, uuid },
     subscribe: (onChange) => {
       listeners.add(onChange);
       return () => listeners.delete(onChange);

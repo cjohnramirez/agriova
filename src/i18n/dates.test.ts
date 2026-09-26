@@ -1,4 +1,11 @@
-import { formatDate, formatDateLong, formatMonthShort, formatMonthYear, weekOf } from './dates';
+import {
+  daysEnding,
+  formatDate,
+  formatDateLong,
+  formatMonthShort,
+  formatMonthYear,
+  weekOf,
+} from './dates';
 
 describe('dates', () => {
   it('writes a short date in either language', () => {
@@ -32,4 +39,18 @@ describe('dates', () => {
 
   it('starts the week on the day itself when it is a Sunday', () =>
     expect(weekOf('2026-09-27', 'bis')[0].date).toBe('2026-09-27'));
+
+  it('lists the seven days ending today, oldest first', () => {
+    const days = daysEnding('2026-09-26', 'en');
+    expect(days.map((d) => d.date)).toEqual([
+      '2026-09-20',
+      '2026-09-21',
+      '2026-09-22',
+      '2026-09-23',
+      '2026-09-24',
+      '2026-09-25',
+      '2026-09-26',
+    ]);
+    expect(days[6].weekday).toBe('Sa');
+  });
 });

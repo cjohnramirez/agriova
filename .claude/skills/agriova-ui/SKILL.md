@@ -53,7 +53,10 @@ below follows from that.
 | Green or red gradient card | `GradientCard` (`gradient="brand"` or `"danger"`) |
 | AI Warning / Approves / Suggests | `AlertCard kind="warning" \| "approve" \| "suggest"` |
 | Status pill | `Chip` (`tone="onCard"` on gradients, `dot` for a status dot) |
-| Single-select pill row | `FilterPills` |
+| Single-select pill row (filters, scrolls sideways) | `FilterPills` |
+| Single-select answer in a form (wraps, all visible) | `ChoicePills` inside `Field` |
+| Labelled non-text question | `Field` (same label style as `TextField`, error in words) |
+| A record form | `RecordForm` + `DayPicker` in `src/features/record`; writes via `useWriter()` |
 | Main / secondary / on-card button | `Button variant="primary" \| "secondary" \| "onCard"` |
 | Settings-style row | `ListRow` inside `Card gap="none"` |
 | Seven-day picker | `WeekStrip` |

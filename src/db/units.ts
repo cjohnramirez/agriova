@@ -61,6 +61,13 @@ const UNIT_LABELS: Record<Unit, { bis: string; en: string }> = {
   bundle: { bis: 'bugkos', en: 'bundle' },
 };
 
+/** The unit as the farmer says it: "kilo", "sako". */
+export function unitName(unit: Unit, language: 'bis' | 'en'): string {
+  return UNIT_LABELS[unit][language];
+}
+
+export const UNITS: readonly Unit[] = ['kg', 'sack', 'piece', 'bundle'];
+
 export function formatQuantity(milli: number, unit: Unit, language: 'bis' | 'en'): string {
   const quantity = milliToQuantity(milli);
   const trimmed = Number.isInteger(quantity) ? String(quantity) : quantity.toFixed(2);
@@ -136,4 +143,24 @@ export function formatArea(sqm: number): string {
     return `${Number.isInteger(hectares) ? hectares : hectares.toFixed(1)} ha`;
   }
   return `${sqm.toLocaleString('en-PH')} m²`;
+}
+
+// --- Typed input ----------------------------------------------------------
+
+/**
+ * Tidies a number as it is typed: digits and one decimal point, at most
+ * `places` decimals. Commas are dropped, so "1,200" pasted in still works.
+ */
+export function cleanDecimalInput(text: string, places = 2): string {
+  const kept = text.replace(/[^\d.]/g, '');
+  const [whole, ...rest] = kept.split('.');
+  const trimmed = whole.replace(/^0+(?=\d)/, '');
+  if (rest.length === 0) return trimmed;
+  return `${trimmed || '0'}.${rest.join('').slice(0, places)}`;
+}
+
+/** A typed number, or null when there is none or it is not above zero. */
+export function parsePositive(text: string): number | null {
+  const value = Number(text.replace(/,/g, ''));
+  return text.trim() && Number.isFinite(value) && value > 0 ? value : null;
 }

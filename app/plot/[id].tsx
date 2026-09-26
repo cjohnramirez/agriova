@@ -1,9 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Alert } from 'react-native';
 import { Ruler } from 'lucide-react-native';
 
 import { useOwnerId } from '@/auth/SessionProvider';
-import { useLiveQuery } from '@/db/live';
-import { getPlot, listCycles } from '@/db/read';
+import { useLiveQuery, useWriter } from '@/db/live';
+import { cropName, getPlot, listCycles, type CycleSummary } from '@/db/read';
+import { closeCycle } from '@/db/write';
 import { formatArea } from '@/db/units';
 import { CycleRow } from '@/features/CycleRow';
 import { useI18n } from '@/i18n';
@@ -11,9 +13,10 @@ import { Card, ListRow, Screen, ScreenHeader, Section, Text } from '@/ui';
 
 /** One plot: its size, what is planted now, and past seasons with their results. */
 export default function PlotDetail() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const router = useRouter();
   const ownerId = useOwnerId();
+  const writer = useWriter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const plot = useLiveQuery((db) => getPlot(db, ownerId, id), [ownerId, id]);
@@ -23,6 +26,15 @@ export default function PlotDetail() {
   );
   const current = cycles.filter((c) => c.status !== 'closed');
   const past = cycles.filter((c) => c.status === 'closed');
+
+  const confirmClose = (cycle: CycleSummary) =>
+    Alert.alert('', t('cycleCloseConfirm', { crop: cropName(cycle, language) }), [
+      { text: t('cancel'), style: 'cancel' },
+      {
+        text: t('cycleClose'),
+        onPress: () => closeCycle(writer.db, ownerId, cycle.id, writer.clock),
+      },
+    ]);
 
   return (
     <Screen
@@ -46,7 +58,9 @@ export default function PlotDetail() {
           <Section title={t('plotNow')}>
             <Card>
               {current.length ? (
-                current.map((cycle) => <CycleRow key={cycle.id} cycle={cycle} />)
+                current.map((cycle) => (
+                  <CycleRow key={cycle.id} cycle={cycle} onClose={() => confirmClose(cycle)} />
+                ))
               ) : (
                 <Text tone="muted">{t('plotNothingYet')}</Text>
               )}

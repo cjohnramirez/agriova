@@ -1,10 +1,11 @@
+import { randomUUID } from 'expo-crypto';
 import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 
 import type { DataSource } from './live';
 import { RESET_LOCAL_DATA_SQL } from './reset';
 import * as schema from './schema';
-import type { SqlRunner } from './write';
+import type { SqlDb } from './write';
 import { SEED_CROPS } from './seed';
 
 export const DATABASE_NAME = 'agriova.db';
@@ -26,8 +27,9 @@ sqliteDb.execSync('PRAGMA foreign_keys = ON;');
 export const db = drizzle(sqliteDb, { schema });
 
 /** The device side of `SqlRunner`, for the write helpers in `write.ts`. */
-export const deviceRunner: SqlRunner = {
+export const deviceRunner: SqlDb = {
   run: (sql, params) => void sqliteDb.runSync(sql, params),
+  all: (sql, params = []) => sqliteDb.getAllSync(sql, params),
   transaction: (work) => sqliteDb.withTransactionSync(work),
 };
 
@@ -36,7 +38,9 @@ export const deviceRunner: SqlRunner = {
  * is enabled when the database is opened above.
  */
 export const deviceSource: DataSource = {
-  reader: { all: (sql, params = []) => sqliteDb.getAllSync(sql, params) },
+  reader: deviceRunner,
+  writer: deviceRunner,
+  clock: { now: Date.now, uuid: randomUUID },
   subscribe: (onChange) => {
     const subscription = addDatabaseChangeListener(onChange);
     return () => subscription.remove();

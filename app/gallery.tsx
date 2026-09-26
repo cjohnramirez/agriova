@@ -21,8 +21,10 @@ import {
   Card,
   ChatBubble,
   ChoiceCard,
+  ChoicePills,
   Chip,
   EmptyState,
+  Field,
   FilterPills,
   GradientCard,
   IconButton,
@@ -49,6 +51,7 @@ import {
 export default function Gallery() {
   const { isNarrow } = useBreakpoint();
   const [day, setDay] = useState('2026-05-15');
+  const [spentOn, setSpentOn] = useState<'seed' | 'fertilizer' | 'labor' | null>(null);
   const [filter, setFilter] = useState<'all' | 'seeds' | 'fertilizer' | 'tools'>('all');
 
   if (!__DEV__) return <Redirect href="/" />;
@@ -217,6 +220,18 @@ export default function Gallery() {
           onPress={noop}
         />
         <ChoiceCard title="Binisaya" selected onPress={noop} />
+        <Field label="Spent on" error={spentOn ? null : 'Choose one.'}>
+          <ChoicePills
+            label="Spent on"
+            selected={spentOn}
+            onSelect={setSpentOn}
+            options={[
+              { key: 'seed', label: 'Seeds' },
+              { key: 'fertilizer', label: 'Fertilizer' },
+              { key: 'labor', label: 'Labor' },
+            ]}
+          />
+        </Field>
       </Section>
 
       <Section title="Data">

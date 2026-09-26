@@ -1,29 +1,20 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Hammer } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 
-import { useI18n } from '@/i18n';
-import { color, layout } from '@/theme/tokens';
-import { EmptyState, ScreenHeader } from '@/ui';
+import { ExpenseForm } from '@/features/record/ExpenseForm';
+import { HarvestForm } from '@/features/record/HarvestForm';
+import { PlantingForm } from '@/features/record/PlantingForm';
+import { SaleForm } from '@/features/record/SaleForm';
 
-const titles = { expense: 'recordExpense', harvest: 'recordHarvest', sale: 'recordSale' } as const;
+const FORMS = {
+  expense: ExpenseForm,
+  harvest: HarvestForm,
+  sale: SaleForm,
+  planting: PlantingForm,
+} as const;
 
-/** Placeholder for the record forms, which arrive in step 6. */
-export default function RecordForm() {
-  const { t } = useI18n();
-  const router = useRouter();
-  const { kind } = useLocalSearchParams<{ kind: keyof typeof titles }>();
-
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: color.background }}>
-      <ScreenHeader
-        title={t(titles[kind] ?? 'recordExpense')}
-        backLabel={t('back')}
-        onBack={() => router.back()}
-      />
-      <SafeAreaView edges={[]} style={{ padding: layout.screenPadding }}>
-        <EmptyState icon={Hammer} title={t('comingSoon')} />
-      </SafeAreaView>
-    </SafeAreaView>
-  );
+/** The record forms, one route: `/record/expense`, `/record/sale`, and so on. */
+export default function RecordRoute() {
+  const { kind } = useLocalSearchParams<{ kind: string }>();
+  const Form = FORMS[kind as keyof typeof FORMS];
+  return Form ? <Form /> : <Redirect href="/" />;
 }

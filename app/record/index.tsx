@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { HandCoins, Receipt, Wheat } from 'lucide-react-native';
+import { HandCoins, Receipt, Sprout, Wheat } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,14 +9,15 @@ import { ChoiceCard, Text } from '@/ui';
 
 /**
  * The "+ Itala" sheet. Three large choices, because recording is the ledger
- * and every other number in the app is built from these three kinds of entry.
+ * and every other number in the app is built from these three kinds of entry,
+ * then the planting they hang off, which is recorded far less often.
  */
 export default function RecordSheet() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const open = (kind: 'expense' | 'harvest' | 'sale') =>
+  const open = (kind: 'expense' | 'harvest' | 'sale' | 'planting') =>
     router.replace({ pathname: '/record/[kind]', params: { kind } });
 
   return (
@@ -41,6 +42,12 @@ export default function RecordSheet() {
         title={t('recordSale')}
         hint={t('recordSaleHint')}
         onPress={() => open('sale')}
+      />
+      <ChoiceCard
+        icon={Sprout}
+        title={t('recordPlanting')}
+        hint={t('recordPlantingHint')}
+        onPress={() => open('planting')}
       />
     </View>
   );

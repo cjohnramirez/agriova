@@ -1,9 +1,8 @@
-import { randomUUID } from 'expo-crypto';
 import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { useOwnerId } from '@/auth/SessionProvider';
-import { deviceRunner } from '@/db/client';
+import { useWriter } from '@/db/live';
 import { createPlot } from '@/db/write';
 import { useI18n } from '@/i18n';
 import { FormScreen } from '@/shell/FormScreen';
@@ -23,6 +22,7 @@ type PlotFormProps = {
 export function PlotForm({ title, subtitle, canGoBack, onSaved, secondary }: PlotFormProps) {
   const { t } = useI18n();
   const ownerId = useOwnerId();
+  const writer = useWriter();
   const [name, setName] = useState('');
   const [area, setArea] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -34,12 +34,7 @@ export function PlotForm({ title, subtitle, canGoBack, onSaved, secondary }: Plo
       return;
     }
     try {
-      createPlot(
-        deviceRunner,
-        ownerId,
-        { name, areaSqm: area ? Number(area) : null },
-        { now: Date.now, uuid: randomUUID },
-      );
+      createPlot(writer.db, ownerId, { name, areaSqm: area ? Number(area) : null }, writer.clock);
     } catch {
       setError(t('plotSaveFailed'));
       return;

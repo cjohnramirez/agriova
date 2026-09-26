@@ -95,3 +95,19 @@ export function weekOf(iso: string, language: Language): WeekDay[] {
     };
   });
 }
+
+/**
+ * The seven days ending on `end`, oldest first, for picking when something
+ * happened. A record is about the past, so the window ends today, not on a
+ * Saturday that has not come yet.
+ */
+export function daysEnding(end: string, language: Language): WeekDay[] {
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(end, i - 6);
+    return {
+      date,
+      weekday: WEEKDAY_SHORT[language][parts(date).weekday],
+      spoken: formatDateLong(date, language),
+    };
+  });
+}
