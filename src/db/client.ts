@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 
 import { RESET_LOCAL_DATA_SQL } from './reset';
 import * as schema from './schema';
+import type { SqlRunner } from './write';
 import { SEED_CROPS } from './seed';
 
 export const DATABASE_NAME = 'agriova.db';
@@ -22,6 +23,12 @@ sqliteDb.execSync('PRAGMA journal_mode = WAL;');
 sqliteDb.execSync('PRAGMA foreign_keys = ON;');
 
 export const db = drizzle(sqliteDb, { schema });
+
+/** The device side of `SqlRunner`, for the write helpers in `write.ts`. */
+export const deviceRunner: SqlRunner = {
+  run: (sql, params) => void sqliteDb.runSync(sql, params),
+  transaction: (work) => sqliteDb.withTransactionSync(work),
+};
 
 export type Database = typeof db;
 

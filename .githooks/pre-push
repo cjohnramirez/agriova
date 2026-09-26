@@ -9,5 +9,15 @@ if ! npm run --silent verify; then
   echo "Fix the errors, or bypass with 'git push --no-verify' if this is urgent."
   exit 1
 fi
+# Some npm versions (11.6 and earlier) drop two optional WASM entries from the
+# lockfile when installing, and 'npm ci' in CI then refuses to run. Catch it
+# here instead of on GitHub.
+echo "pre-push: checking the lockfile installs cleanly in CI..."
+if ! npm run --silent lockfile:check > /dev/null 2>&1; then
+  echo ""
+  echo "pre-push: package-lock.json would fail 'npm ci' in CI."
+  echo "Fix with: npx -y npm@latest install --package-lock-only"
+  exit 1
+fi
 echo "pre-push: clean."
 exit 0

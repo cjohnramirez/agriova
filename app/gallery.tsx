@@ -19,6 +19,7 @@ import {
   AlertCard,
   Button,
   Card,
+  ChoiceCard,
   Chip,
   EmptyState,
   FilterPills,
@@ -30,6 +31,7 @@ import {
   Sparkline,
   StepChart,
   Text,
+  TextField,
   TopBar,
   useBreakpoint,
   WeekStrip,
@@ -198,6 +200,19 @@ export default function Gallery() {
         <Button label="Save expense" onPress={noop} block />
         <Button variant="secondary" icon={SlidersHorizontal} label="Filters" onPress={noop} />
         <Button label="Disabled" onPress={noop} disabled />
+      </Section>
+
+      <Section title="Forms">
+        <TextField label="Mobile number" prefix="+63" size="large" placeholder="9XX XXX XXXX" />
+        <TextField label="Barangay" hint="Where your farm is." />
+        <TextField label="Plot name" error="Please fill this in." />
+        <ChoiceCard
+          icon={Wallet}
+          title="Expense"
+          hint="Money you spent on the farm"
+          onPress={noop}
+        />
+        <ChoiceCard title="Binisaya" selected onPress={noop} />
       </Section>
 
       <Section title="Empty state">

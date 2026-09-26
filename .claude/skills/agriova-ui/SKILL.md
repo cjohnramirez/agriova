@@ -61,6 +61,11 @@ below follows from that.
 | Temperature / moisture trend | `Sparkline` |
 | Nothing recorded yet | `EmptyState`, always with an action |
 | Logo | `Logo variant="mark" \| "wordmark"` |
+| Labelled input | `TextField` (tapping the label focuses it; `size="large"` for the one field a screen is about) |
+| One big choice | `ChoiceCard` (pass `selected` to make it a radio) |
+| Back + title bar | `ScreenHeader` |
+| One-question form screen | `FormScreen` in `src/shell` (pinned footer button) |
+| A tab | `TabScreen` in `src/shell` (TopBar + record button) |
 
 Width-dependent layout goes through `useBreakpoint()`. `isNarrow` is true below
 380dp **or** at font scale 1.3 and up; two-up tiles stack when it is.

@@ -74,16 +74,21 @@ export const font = {
  *
  * Line heights sit around 1.3x so wrapped Bisaya, which runs longer than the
  * English the prototype was drawn with, stays readable.
+ *
+ * Body stays at 18 for the target reader; headings were stepped down from an
+ * earlier 28/22 after review, because long Bisaya titles wrapped and the
+ * levels stopped reading as distinct. The phone's own font-size setting still
+ * scales everything for those who need it larger.
  */
 export const type = {
   /** The peso total on the home hero. The number is the product. */
-  display: { fontFamily: font.bold, fontSize: 52, lineHeight: 60 },
+  display: { fontFamily: font.bold, fontSize: 44, lineHeight: 52 },
   /** Peso figures and quantities inside cards. */
-  figure: { fontFamily: font.semibold, fontSize: 40, lineHeight: 48 },
+  figure: { fontFamily: font.semibold, fontSize: 34, lineHeight: 40 },
   /** Screen titles. */
-  title: { fontFamily: font.bold, fontSize: 28, lineHeight: 36 },
+  title: { fontFamily: font.bold, fontSize: 24, lineHeight: 30 },
   /** Section titles and card headings. */
-  heading: { fontFamily: font.semibold, fontSize: 22, lineHeight: 28 },
+  heading: { fontFamily: font.semibold, fontSize: 20, lineHeight: 26 },
   /** Emphasised body: list item titles, button labels. */
   bodyStrong: { fontFamily: font.medium, fontSize: 18, lineHeight: 24 },
   body: { fontFamily: font.regular, fontSize: 18, lineHeight: 24 },
