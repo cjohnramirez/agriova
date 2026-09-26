@@ -1,9 +1,21 @@
+import { randomUUID } from 'expo-crypto';
 import { useRouter } from 'expo-router';
-import { CircleHelp, Globe, Info, LogOut, Trash2, UserRound } from 'lucide-react-native';
+import {
+  CircleHelp,
+  FlaskConical,
+  Globe,
+  Info,
+  LogOut,
+  Trash2,
+  UserRound,
+} from 'lucide-react-native';
 import { Alert } from 'react-native';
 
 import { formatPhone } from '@/auth/phone';
 import { useSession } from '@/auth/SessionProvider';
+import { deviceRunner } from '@/db/client';
+import { seedDemoFarm } from '@/db/demo';
+import { todayLocal } from '@/db/units';
 import { LANGUAGE_NAMES, useI18n } from '@/i18n';
 import { Card, ListRow, Screen, ScreenHeader } from '@/ui';
 
@@ -53,6 +65,19 @@ export default function Settings() {
         <ListRow icon={CircleHelp} title={t('settingsHelp')} onPress={() => {}} />
         <ListRow icon={Info} title={t('settingsAbout')} onPress={() => {}} />
       </Card>
+
+      {__DEV__ && session ? (
+        <Card gap="none">
+          <ListRow
+            icon={FlaskConical}
+            title={t('devSampleFarm')}
+            onPress={() => {
+              seedDemoFarm(deviceRunner, session.userId, todayLocal(), randomUUID);
+              router.navigate('/');
+            }}
+          />
+        </Card>
+      ) : null}
 
       <Card gap="none">
         <ListRow

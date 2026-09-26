@@ -66,6 +66,21 @@ below follows from that.
 | Back + title bar | `ScreenHeader` |
 | One-question form screen | `FormScreen` in `src/shell` (pinned footer button) |
 | A tab | `TabScreen` in `src/shell` (TopBar + record button) |
+| Titled group of content | `Section` (heading 12 above its content; `action` adds the round ↗ button) |
+| A number with its name | `MetricTile`, laid out two-up with `Tiles` |
+| Tappable card (a plot) | `Card onPress accessibilityLabel` |
+| Chat message | `ChatBubble from="farmer" | "assistant"` |
+| Shop listing | `ProductCard` |
+
+## Reading data
+
+Screens read through `useLiveQuery((db) => query(db, ownerId, ...), [deps])`
+from `src/db/live.tsx`, with queries from `src/db/read.ts` and the owner from
+`useOwnerId()`. It re-renders when any row changes, so no screen refreshes
+another. Never import `src/db/client` in a screen that only reads; tests swap
+the source for in-memory SQLite (`src/testing/renderScreen.tsx`). Enum values
+reach the screen through `src/i18n/labels.ts`, dates through
+`src/i18n/dates.ts`. After adding a route, run `npm run gen:routes`.
 
 Width-dependent layout goes through `useBreakpoint()`. `isNarrow` is true below
 380dp **or** at font scale 1.3 and up; two-up tiles stack when it is.

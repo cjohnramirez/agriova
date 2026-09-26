@@ -79,6 +79,9 @@ function RootStack() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="settings" />
         <Stack.Screen name="notifications" />
+        <Stack.Screen name="statistics" />
+        <Stack.Screen name="plot/new" />
+        <Stack.Screen name="plot/[id]" />
         <Stack.Screen
           name="record/index"
           options={{

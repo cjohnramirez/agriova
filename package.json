@@ -67,7 +67,8 @@
     "test:ci": "jest --ci --coverage",
     "gen:brand": "node scripts/gen-brand.mjs",
     "gen:icons": "node scripts/gen-icons.mjs",
-    "lockfile:check": "npx -y npm@10 ci --dry-run --no-audit --no-fund"
+    "lockfile:check": "npx -y npm@10 ci --dry-run --no-audit --no-fund",
+    "gen:routes": "node scripts/gen-route-types.mjs"
   },
   "private": true,
   "engines": {

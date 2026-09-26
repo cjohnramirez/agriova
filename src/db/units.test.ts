@@ -5,6 +5,9 @@
  */
 import {
   addDays,
+  addMonths,
+  daysBetween,
+  formatArea,
   formatPesos,
   formatQuantity,
   pesosToCentavos,
@@ -65,4 +68,19 @@ describe('dates', () => {
   it('handles a leap year', () => expect(addDays('2028-02-28', 1)).toBe('2028-02-29'));
   // Shelf life for banana is 7 days; the alert fires two days before it closes.
   it('computes a spoilage window', () => expect(addDays('2026-08-14', 7 - 2)).toBe('2026-08-19'));
+});
+
+describe('day arithmetic', () => {
+  it('counts forward', () => expect(daysBetween('2026-08-14', '2026-08-19')).toBe(5));
+  it('counts backward', () => expect(daysBetween('2026-08-19', '2026-08-14')).toBe(-5));
+  it('crosses a year', () => expect(daysBetween('2026-12-30', '2027-01-02')).toBe(3));
+  it('is zero on the same day', () => expect(daysBetween('2026-08-14', '2026-08-14')).toBe(0));
+  it('steps months back across a year', () => expect(addMonths('2026-02-15', -3)).toBe('2025-11'));
+  it('keeps the month at zero', () => expect(addMonths('2026-02-28', 0)).toBe('2026-02'));
+});
+
+describe('area', () => {
+  it('uses square metres below a hectare', () => expect(formatArea(2500)).toBe('2,500 m²'));
+  it('uses whole hectares', () => expect(formatArea(20_000)).toBe('2 ha'));
+  it('rounds hectares to one place', () => expect(formatArea(12_345)).toBe('1.2 ha'));
 });

@@ -101,3 +101,39 @@ export function addDays(isoDate: string, days: number): string {
   const shifted = new Date(year, month - 1, day + days);
   return todayLocal(shifted);
 }
+
+/**
+ * Whole calendar days from `from` to `to`, both 'YYYY-MM-DD'. Negative when
+ * `to` is earlier. Counted at noon so a daylight-saving shift cannot round a
+ * day away.
+ */
+export function daysBetween(from: string, to: string): number {
+  const noon = (iso: string) => {
+    const [year, month, day] = iso.split('-').map(Number);
+    return new Date(year, month - 1, day, 12).getTime();
+  };
+  return Math.round((noon(to) - noon(from)) / 86_400_000);
+}
+
+/** The 'YYYY-MM' month `offset` months from the month of `isoDate`. */
+export function addMonths(isoDate: string, offset: number): string {
+  const [year, month] = isoDate.split('-').map(Number);
+  const shifted = new Date(year, month - 1 + offset, 1);
+  return todayLocal(shifted).slice(0, 7);
+}
+
+// --- Area -----------------------------------------------------------------
+
+const SQM_PER_HECTARE = 10_000;
+
+/**
+ * Land area as a farmer says it: hectares from one hectare up, square metres
+ * below. "0.25 ha" is correct but nobody in a barangay describes a lot that way.
+ */
+export function formatArea(sqm: number): string {
+  if (sqm >= SQM_PER_HECTARE) {
+    const hectares = sqm / SQM_PER_HECTARE;
+    return `${Number.isInteger(hectares) ? hectares : hectares.toFixed(1)} ha`;
+  }
+  return `${sqm.toLocaleString('en-PH')} m²`;
+}

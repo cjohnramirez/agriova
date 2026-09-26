@@ -93,3 +93,12 @@ export function useSession(): SessionValue {
   if (!value) throw new Error('useSession must be used inside SessionProvider');
   return value;
 }
+
+/**
+ * The signed-in farmer's id, for scoping queries. Empty for the moment between
+ * signing out and the guard leaving the screen, so queries return nothing
+ * instead of the screen throwing mid-transition.
+ */
+export function useOwnerId(): string {
+  return useSession().session?.userId ?? '';
+}

@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { color, gradient, radius, space, type GradientName } from '@/theme/tokens';
 
@@ -13,12 +13,35 @@ type CardProps = {
   gap?: 'normal' | 'none';
 };
 
+type PressableCardProps = CardProps & {
+  onPress?: () => void;
+  /** Required with onPress: what a screen reader says for the whole card. */
+  accessibilityLabel?: string;
+};
+
 /** The white rounded card on the grey background. The basic unit of every screen. */
-export function Card({ children, style, padding = 'normal', gap = 'normal' }: CardProps) {
+export function Card({
+  children,
+  style,
+  padding = 'normal',
+  gap = 'normal',
+  onPress,
+  accessibilityLabel,
+}: PressableCardProps) {
+  const base = [styles.card, styles[padding], gap === 'none' && styles.flush, style];
+  if (!onPress) return <View style={base}>{children}</View>;
+
+  // A tappable card, like a plot in the Fields list, is one button to a screen
+  // reader rather than a heap of separate texts.
   return (
-    <View style={[styles.card, styles[padding], gap === 'none' && styles.flush, style]}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      style={({ pressed }) => [base, pressed && styles.pressed]}
+    >
       {children}
-    </View>
+    </Pressable>
   );
 }
 
@@ -58,4 +81,5 @@ const styles = StyleSheet.create({
   normal: { padding: space.lg },
   hero: { padding: space.xl },
   flush: { gap: 0, paddingVertical: space.xs },
+  pressed: { backgroundColor: color.background },
 });

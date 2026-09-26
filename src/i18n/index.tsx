@@ -26,7 +26,7 @@ function detectLanguage(): Language {
   return primary === 'en' ? 'en' : 'bis';
 }
 
-type Translate = (key: StringKey, vars?: Record<string, string | number>) => string;
+export type Translate = (key: StringKey, vars?: Record<string, string | number>) => string;
 
 type I18nValue = {
   language: Language;

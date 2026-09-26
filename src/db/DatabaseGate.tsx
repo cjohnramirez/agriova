@@ -3,7 +3,8 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
 import migrations from '../../drizzle/migrations';
-import { db, seedReferenceData } from './client';
+import { db, deviceSource, seedReferenceData } from './client';
+import { DataSourceProvider } from './live';
 import { useI18n } from '@/i18n';
 import { color, layout, space } from '@/theme/tokens';
 import { Text } from '@/ui';
@@ -54,7 +55,7 @@ export function DatabaseGate({ children }: { children: ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return <DataSourceProvider source={deviceSource}>{children}</DataSourceProvider>;
 }
 
 const styles = StyleSheet.create({

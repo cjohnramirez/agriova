@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useSession } from '@/auth/SessionProvider';
+import { useProduceOnHand } from '@/features/useProduceOnHand';
 import { useI18n } from '@/i18n';
 import { color, layout, radius, space } from '@/theme/tokens';
 import { IconButton, Screen, Text, TopBar } from '@/ui';
@@ -19,6 +20,8 @@ export function TabScreen({ children, showRecord = true }: TabScreenProps) {
   const { t } = useI18n();
   const router = useRouter();
   const { session } = useSession();
+  // The bell shows a dot while any produce is close to spoiling.
+  const hasAlerts = useProduceOnHand().some((item) => item.level !== 'fresh');
 
   return (
     <View style={styles.flex}>
@@ -34,6 +37,7 @@ export function TabScreen({ children, showRecord = true }: TabScreenProps) {
                 icon={Bell}
                 label={t('topNotifications')}
                 onPress={() => router.push('/notifications')}
+                badge={hasAlerts}
               />
             }
           />

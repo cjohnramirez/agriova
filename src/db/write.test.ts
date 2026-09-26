@@ -1,22 +1,5 @@
-import { openTestDb, type TestDb } from './testing/openTestDb';
-import { createPlot, type SqlRunner } from './write';
-
-/** The node:sqlite equivalent of the device runner in `client.ts`. */
-function runnerFor(db: TestDb): SqlRunner {
-  return {
-    run: (sql, params) => void db.prepare(sql).run(...params),
-    transaction: (work) => {
-      db.exec('begin');
-      try {
-        work();
-        db.exec('commit');
-      } catch (error) {
-        db.exec('rollback');
-        throw error;
-      }
-    },
-  };
-}
+import { openTestDb, runnerFor, type TestDb } from './testing/openTestDb';
+import { createPlot } from './write';
 
 let n = 0;
 const clock = { now: () => 1_700_000_000_000, uuid: () => `id-${++n}` };

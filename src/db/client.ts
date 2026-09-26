@@ -1,6 +1,7 @@
-import { openDatabaseSync } from 'expo-sqlite';
+import { addDatabaseChangeListener, openDatabaseSync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 
+import type { DataSource } from './live';
 import { RESET_LOCAL_DATA_SQL } from './reset';
 import * as schema from './schema';
 import type { SqlRunner } from './write';
@@ -28,6 +29,18 @@ export const db = drizzle(sqliteDb, { schema });
 export const deviceRunner: SqlRunner = {
   run: (sql, params) => void sqliteDb.runSync(sql, params),
   transaction: (work) => sqliteDb.withTransactionSync(work),
+};
+
+/**
+ * The device side of `DataSource`, for `useLiveQuery`. The change listener
+ * is enabled when the database is opened above.
+ */
+export const deviceSource: DataSource = {
+  reader: { all: (sql, params = []) => sqliteDb.getAllSync(sql, params) },
+  subscribe: (onChange) => {
+    const subscription = addDatabaseChangeListener(onChange);
+    return () => subscription.remove();
+  },
 };
 
 export type Database = typeof db;

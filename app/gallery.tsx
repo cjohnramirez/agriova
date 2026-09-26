@@ -19,6 +19,7 @@ import {
   AlertCard,
   Button,
   Card,
+  ChatBubble,
   ChoiceCard,
   Chip,
   EmptyState,
@@ -27,11 +28,14 @@ import {
   IconButton,
   ListRow,
   Logo,
+  MetricTile,
+  ProductCard,
   Screen,
   Sparkline,
   StepChart,
   Text,
   TextField,
+  Tiles,
   TopBar,
   useBreakpoint,
   WeekStrip,
@@ -213,6 +217,34 @@ export default function Gallery() {
           onPress={noop}
         />
         <ChoiceCard title="Binisaya" selected onPress={noop} />
+      </Section>
+
+      <Section title="Data">
+        <Tiles>
+          <MetricTile icon={MapPin} label="Plots" value="2" caption="1.1 ha" />
+          <MetricTile icon={Sprout} label="Growing now" value="3" />
+        </Tiles>
+        <View style={[styles.tiles, isNarrow && styles.stack]}>
+          <ProductCard
+            name="Pioneer hybrid yellow corn"
+            price="₱4,200"
+            per="per 18 kg bag"
+            seller="Claveria Seed Dist."
+            onPress={noop}
+          />
+          <ProductCard
+            name="Drip irrigation tape"
+            price="₱850"
+            per="per roll"
+            seller="Gingoog Farmers Coop"
+            onPress={noop}
+          />
+        </View>
+        <ChatBubble from="farmer" text="When should I sell my tomatoes?" />
+        <ChatBubble
+          from="assistant"
+          text="Prices in Carmen are highest on Saturday. Sell the ripest first."
+        />
       </Section>
 
       <Section title="Empty state">
