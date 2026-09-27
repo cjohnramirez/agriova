@@ -39,17 +39,25 @@ $env:Path = "$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:Path"
 
 ## Boot, build, launch
 
+0. The emulator resets to its saved snapshot, so the app may be gone after a
+   reboot; check with `adb shell pm list packages | findstr farmerp`.
+   Boot with `-memory 2048` on this machine: Metro plus the emulator need
+   about 4 GB free.
 1. Boot the AVD named `agriova` (Pixel 6, API 35, 1080x2400 at 420 dpi = 411dp):
    `Start-Process "$env:ANDROID_HOME\emulator\emulator.exe" -ArgumentList "-avd","agriova","-no-snapshot-save"`
    then wait until `adb shell getprop sys.boot_completed` returns `1`.
 2. Start Metro in the background: `npx expo start --port 8081`.
 3. Build and install (first build about 15 min, later about 5):
    `npx expo run:android --no-bundler` (run in background, log to a file).
-4. The CLI opens the app against the LAN IP, which the emulator may not reach.
-   Route through localhost instead:
+4. This is a plain debug build, not an Expo dev client: it loads its code from
+   Metro at localhost:8081, so forward the port and start the activity by name.
+   Do not use `agriova://expo-development-client/...` links; nothing handles
+   them. Expo Go (`host.exp.exponent`) is also on the emulator with an old
+   project cached, and a stray launch shows its screens, not this app.
    ```powershell
    adb reverse tcp:8081 tcp:8081
-   adb shell am start -a android.intent.action.VIEW -d "agriova://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081" com.jcrrrr.farmerp
+   adb shell am force-stop host.exp.exponent
+   adb shell am start -n com.jcrrrr.farmerp/.MainActivity
    ```
 5. Wait for `Android Bundled` in the Metro log. In dev mode the first real UI
    appears about 15 s after launch; a blank screen before then is normal.

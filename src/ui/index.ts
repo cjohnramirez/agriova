@@ -13,6 +13,7 @@ export { IconButton } from './IconButton';
 export { ListRow } from './ListRow';
 export { Logo } from './Logo';
 export { MetricTile, Tiles } from './MetricTile';
+export { PhotoHero } from './PhotoHero';
 export { ProductCard } from './ProductCard';
 export { Screen } from './Screen';
 export { ScreenHeader } from './ScreenHeader';

@@ -1,33 +1,22 @@
 import { useRouter } from 'expo-router';
 import { ArrowUpRight, Clock, Ruler, Sprout } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
 
 import { useOwnerId } from '@/auth/SessionProvider';
 import { useLiveQuery } from '@/db/live';
-import { farmCounts, ledger, seasonTotals } from '@/db/read';
-import { formatArea, formatPesos } from '@/db/units';
+import { cropName, farmCounts, ledger, listCycles, seasonTotals } from '@/db/read';
+import { formatArea } from '@/db/units';
 import { FinanceCard } from '@/features/FinanceCard';
+import { HomeHero } from '@/features/HomeHero';
 import { LedgerList } from '@/features/LedgerList';
 import { sellSoonBody, useProduceOnHand } from '@/features/useProduceOnHand';
 import { useI18n } from '@/i18n';
 import { TabScreen } from '@/shell/TabScreen';
-import { color, space } from '@/theme/tokens';
-import {
-  AlertCard,
-  Button,
-  Card,
-  GradientCard,
-  ListRow,
-  MetricTile,
-  Section,
-  Text,
-  Tiles,
-} from '@/ui';
+import { AlertCard, Button, Card, ListRow, MetricTile, Section, Tiles } from '@/ui';
 
 const RECENT = 3;
 
 /**
- * Home. The season's net earnings come first because it is the need farmers
+ * Home. The photo hero leads with the season's net earnings because it is the need farmers
  * named most: "I will finally know if I am earning." Below it, produce that
  * must be sold before it spoils, the farm at a glance, and the latest records.
  */
@@ -37,6 +26,7 @@ export default function Home() {
   const ownerId = useOwnerId();
 
   const season = useLiveQuery((db) => seasonTotals(db, ownerId), [ownerId]);
+  const cycles = useLiveQuery((db) => listCycles(db, ownerId), [ownerId]);
   const counts = useLiveQuery((db) => farmCounts(db, ownerId), [ownerId]);
   const recent = useLiveQuery((db) => ledger(db, ownerId, { limit: RECENT }), [ownerId]);
   const produce = useProduceOnHand();
@@ -45,24 +35,7 @@ export default function Home() {
 
   return (
     <TabScreen>
-      <GradientCard padding="hero">
-        <Text tone="onBrand">{t('homeEarningsLabel')}</Text>
-        <Text variant="display" tone="onBrand" numeric>
-          {formatPesos(season.netCentavos)}
-        </Text>
-        {season.revenueCentavos || season.expenseCentavos ? (
-          <View style={styles.split}>
-            <Text tone="onBrand" numeric>
-              {t('homeSold')} {formatPesos(season.revenueCentavos)}
-            </Text>
-            <Text tone="onBrand" numeric>
-              {t('homeSpent')} {formatPesos(season.expenseCentavos)}
-            </Text>
-          </View>
-        ) : (
-          <Text tone="onBrand">{t('homeEarningsEmpty')}</Text>
-        )}
-      </GradientCard>
+      <HomeHero season={season} cycles={cycles} />
 
       {produce.length > 0 ? (
         <Section title={t('homeProduceTitle')} subtitle={t('homeProduceSubtitle')}>
@@ -104,7 +77,12 @@ export default function Home() {
             value={String(counts.plots)}
             caption={counts.areaSqm ? formatArea(counts.areaSqm) : undefined}
           />
-          <MetricTile icon={Sprout} label={t('metricGrowing')} value={String(season.cycles)} />
+          <MetricTile
+            icon={Sprout}
+            label={t('metricGrowing')}
+            value={String(season.cycles)}
+            caption={cycles.map((cycle) => cropName(cycle, language)).join(', ') || undefined}
+          />
         </Tiles>
       </Section>
 
@@ -122,15 +100,3 @@ export default function Home() {
     </TabScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  split: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    columnGap: space.lg,
-    rowGap: space.xs,
-    paddingTop: space.sm,
-    borderTopWidth: 1,
-    borderTopColor: color.onBrandSoft,
-  },
-});

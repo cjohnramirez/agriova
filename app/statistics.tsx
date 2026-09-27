@@ -4,7 +4,14 @@ import { CloudUpload, Ruler, Sprout, Tractor, Wheat } from 'lucide-react-native'
 
 import { useOwnerId } from '@/auth/SessionProvider';
 import { useLiveQuery } from '@/db/live';
-import { cropName, expensesByCategory, farmCounts, harvestByCrop, seasonTotals } from '@/db/read';
+import {
+  cropName,
+  expensesByCategory,
+  farmCounts,
+  harvestByCrop,
+  listCycles,
+  seasonTotals,
+} from '@/db/read';
 import { formatArea, formatPesos, formatQuantity } from '@/db/units';
 import { FinanceCard } from '@/features/FinanceCard';
 import { useI18n } from '@/i18n';
@@ -24,6 +31,7 @@ export default function Statistics() {
 
   const counts = useLiveQuery((db) => farmCounts(db, ownerId), [ownerId]);
   const season = useLiveQuery((db) => seasonTotals(db, ownerId), [ownerId]);
+  const cycles = useLiveQuery((db) => listCycles(db, ownerId), [ownerId]);
   const spending = useLiveQuery((db) => expensesByCategory(db, ownerId), [ownerId]);
   const harvests = useLiveQuery((db) => harvestByCrop(db, ownerId), [ownerId]);
 
@@ -45,7 +53,12 @@ export default function Statistics() {
           />
         </Tiles>
         <Tiles>
-          <MetricTile icon={Sprout} label={t('metricGrowing')} value={String(season.cycles)} />
+          <MetricTile
+            icon={Sprout}
+            label={t('metricGrowing')}
+            value={String(season.cycles)}
+            caption={cycles.map((cycle) => cropName(cycle, language)).join(', ') || undefined}
+          />
           <MetricTile
             icon={CloudUpload}
             label={t('metricPending')}

@@ -56,6 +56,14 @@ export const gradient = {
 export type GradientName = keyof typeof gradient;
 
 /**
+ * The brand-green tint laid over the Home hero photo. Text sits only in the
+ * top `textZone` of the hero, where the tint is `strong`; below that it fades
+ * to `soft` so the field shows through behind the cards. The token test holds
+ * white text at AA over a pure white patch of sky under the strong tint.
+ */
+export const scrim = { color: color.brandDark, strong: 0.72, soft: 0.2, textZone: 0.6 } as const;
+
+/**
  * Geist, the prototype's typeface. Each weight is its own family because
  * Android cannot synthesise weights for a custom font; `fontWeight` is never
  * set alongside these.
@@ -68,32 +76,29 @@ export const font = {
 } as const;
 
 /**
- * The type ramp. Minimum 18 for anything a farmer must read. `label` is the
- * smallest style in the system and exists only for non-essential text; it must
- * never carry a peso amount, a date, or a quantity.
+ * The type ramp: compact, close to the prototype's density. An earlier ramp
+ * set body at 18 for older readers outdoors; it made screens feel oversized and
+ * was cut to this at review. The phone's own font-size setting still scales
+ * everything for those who need it larger.
  *
- * Line heights sit around 1.3x so wrapped Bisaya, which runs longer than the
- * English the prototype was drawn with, stays readable.
- *
- * Body stays at 18 for the target reader; headings were stepped down from an
- * earlier 28/22 after review, because long Bisaya titles wrapped and the
- * levels stopped reading as distinct. The phone's own font-size setting still
- * scales everything for those who need it larger.
+ * `label` is the smallest style and exists only for non-essential text; it
+ * must never carry a peso amount, a date, or a quantity. Line heights sit
+ * around 1.3x so wrapped Bisaya, which runs longer than English, stays readable.
  */
 export const type = {
   /** The peso total on the home hero. The number is the product. */
-  display: { fontFamily: font.bold, fontSize: 44, lineHeight: 52 },
+  display: { fontFamily: font.bold, fontSize: 34, lineHeight: 42 },
   /** Peso figures and quantities inside cards. */
-  figure: { fontFamily: font.semibold, fontSize: 34, lineHeight: 40 },
+  figure: { fontFamily: font.semibold, fontSize: 26, lineHeight: 32 },
   /** Screen titles. */
-  title: { fontFamily: font.bold, fontSize: 24, lineHeight: 30 },
+  title: { fontFamily: font.bold, fontSize: 20, lineHeight: 26 },
   /** Section titles and card headings. */
-  heading: { fontFamily: font.semibold, fontSize: 20, lineHeight: 26 },
+  heading: { fontFamily: font.semibold, fontSize: 17, lineHeight: 22 },
   /** Emphasised body: list item titles, button labels. */
-  bodyStrong: { fontFamily: font.medium, fontSize: 18, lineHeight: 24 },
-  body: { fontFamily: font.regular, fontSize: 18, lineHeight: 24 },
+  bodyStrong: { fontFamily: font.medium, fontSize: 15, lineHeight: 20 },
+  body: { fontFamily: font.regular, fontSize: 15, lineHeight: 20 },
   /** Chips, captions, tab labels. Never essential information. */
-  label: { fontFamily: font.medium, fontSize: 15, lineHeight: 20 },
+  label: { fontFamily: font.medium, fontSize: 13, lineHeight: 18 },
 } as const satisfies Record<string, TextStyle>;
 
 export type TypeVariant = keyof typeof type;
@@ -130,4 +135,6 @@ export const layout = {
   narrowWidth: 380,
   /** Scroll content ends this far above the screen bottom, clearing the tab bar. */
   tabBarClearance: 96,
+  /** Pulls a full-bleed element, like the hero photo, out to the screen edges. */
+  bleed: -space.lg,
 } as const;

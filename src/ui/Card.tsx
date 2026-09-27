@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   gradient: { borderRadius: radius.card, gap: space.md, overflow: 'hidden' },
   normal: { padding: space.lg },
   hero: { padding: space.xl },
-  flush: { gap: 0, paddingVertical: space.xs },
+  // Rows bring their own vertical padding; together they equal the 16 at the sides.
+  flush: { gap: 0, paddingVertical: space.sm },
   pressed: { backgroundColor: color.background },
 });

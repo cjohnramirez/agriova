@@ -78,8 +78,11 @@ export function ListRow({
 }
 
 const styles = StyleSheet.create({
+  // Vertical padding plus the flush card's own padding makes a row's text
+  // sit as far from the card edge above and below as it does at the sides.
   row: {
     minHeight: layout.minTouch,
+    paddingVertical: space.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,

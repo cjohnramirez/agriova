@@ -3,7 +3,7 @@
  * not a nicety. WCAG AA for body text is 4.5:1; every reading pair must pass.
  */
 import { contrastRatio, mix } from './contrast';
-import { color, gradient, layout, type } from './tokens';
+import { color, gradient, layout, scrim, type } from './tokens';
 
 const AA = 4.5;
 
@@ -32,11 +32,16 @@ describe('text contrast', () => {
   });
 });
 
+it('white text holds AA on the hero photo, even over white sky', () => {
+  const tinted = mix(scrim.color, '#FFFFFF', 1 - scrim.strong);
+  expect(contrastRatio(color.textOnBrand, tinted)).toBeGreaterThanOrEqual(AA);
+});
+
 describe('type floor', () => {
-  it('keeps every reading style at 18 or above', () => {
+  it('keeps every reading style at 15 or above', () => {
     const { label, ...reading } = type;
-    for (const style of Object.values(reading)) expect(style.fontSize).toBeGreaterThanOrEqual(18);
-    expect(label.fontSize).toBeGreaterThanOrEqual(15);
+    for (const style of Object.values(reading)) expect(style.fontSize).toBeGreaterThanOrEqual(15);
+    expect(label.fontSize).toBeGreaterThanOrEqual(13);
   });
 
   // Tighter than body text only for the big figures, where extra leading would

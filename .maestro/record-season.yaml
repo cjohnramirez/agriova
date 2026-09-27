@@ -3,18 +3,13 @@
 #
 # ₱800 sold - ₱500 spent = ₱300.00. If this number is wrong, the product is.
 #
-# Run against a dev build with Metro on :8081 (see .maestro/README.md):
+# Debug builds load their code from Metro on :8081 (see .maestro/README.md):
 #   maestro test .maestro/record-season.yaml
 appId: com.jcrrrr.farmerp
 name: Record a season
 ---
 - launchApp:
     clearState: true
-- runFlow:
-    when:
-      true: ${DEV_CLIENT == 'true'}
-    commands:
-      - openLink: agriova://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
 
 # Onboarding, in English so the assertions read plainly.
 - extendedWaitUntil:

@@ -73,7 +73,7 @@ export default function Settings() {
             title={t('devSampleFarm')}
             onPress={() => {
               seedDemoFarm(deviceRunner, session.userId, todayLocal(), randomUUID);
-              router.navigate('/');
+              router.back();
             }}
           />
         </Card>

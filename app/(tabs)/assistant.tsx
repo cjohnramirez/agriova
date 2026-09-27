@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useI18n } from '@/i18n';
 import { TabScreen } from '@/shell/TabScreen';
 import { color, radius, space } from '@/theme/tokens';
-import { Button, ChatBubble, ChoiceCard, Text, TextField, Tiles } from '@/ui';
+import { Button, ChatBubble, ChoiceCard, Text, TextField } from '@/ui';
 
 type Message = { id: number; text: string };
 
@@ -41,18 +41,19 @@ export default function Assistant() {
       </View>
 
       {messages.length === 0 ? (
-        <Tiles>
+        // Stacked, not two-up: a question squeezed into half the width breaks
+        // mid-word in Bisaya.
+        <View style={styles.thread}>
           {(['assistantSuggest1', 'assistantSuggest2'] as const).map((key) => (
-            <View key={key} style={styles.tile}>
-              <ChoiceCard
-                icon={Sparkles}
-                title={t('assistantSuggestion')}
-                hint={t(key)}
-                onPress={() => setDraft(t(key))}
-              />
-            </View>
+            <ChoiceCard
+              key={key}
+              icon={Sparkles}
+              title={t('assistantSuggestion')}
+              hint={t(key)}
+              onPress={() => setDraft(t(key))}
+            />
           ))}
-        </Tiles>
+        </View>
       ) : (
         <View style={styles.thread}>
           {messages.map((message, index) => (
@@ -99,7 +100,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tile: { flex: 1 },
   thread: { gap: space.md },
   ask: { gap: space.md },
 });

@@ -72,6 +72,7 @@ const en = {
 
   homeEarningsLabel: 'Your earnings this season',
   homeEarningsEmpty: 'Record a sale and your earnings will show here.',
+  heroPlantings: 'On your land now',
   homeSold: 'Sold',
   homeSpent: 'Spent',
   homeProduceTitle: 'Produce to sell',
@@ -313,6 +314,7 @@ const bis: Catalog = {
 
   homeEarningsLabel: 'Imong kita karong tinguha',
   homeEarningsEmpty: 'Isulat ang imong baligya ug makita nimo dinhi ang kita.',
+  heroPlantings: 'Anaa karon sa imong yuta',
   homeSold: 'Halin',
   homeSpent: 'Gasto',
   homeProduceTitle: 'Abot nga ibaligya',

@@ -13,7 +13,7 @@ The design source is Figma "Unified Design", section "Prototype" (node
 441:1356): Dashboard, Maps, Schedule, ERP AI, Shop, Settings, Statistics,
 Notifications. Keep its language (deep-green gradient cards, red warning cards,
 white rounded cards on #F7F7F7, pill chips, circular header buttons, Geist).
-Do not copy its sizes: the prototype sets body text at 11px.
+Do not copy its sizes exactly: the prototype sets body text at 11px; the app uses a compact 15 (see `type` in tokens.ts).
 
 ## Who this is for
 
@@ -26,7 +26,7 @@ below follows from that.
 1. **Text is `<Text variant tone>` from `@/ui`.** Never React Native's Text,
    never a raw `fontSize` or `fontFamily`. Variants: `display` (hero peso
    figure), `figure`, `title`, `heading`, `bodyStrong`, `body`, `label`.
-   `label` (15) is for non-essential text only: never a peso amount, date or
+   `label` (13) is for non-essential text only: never a peso amount, date or
    quantity.
 2. **Contrast is 4.5:1 or better** for all reading text, including white text
    over the first three quarters of a gradient card. `tokens.test.ts` checks

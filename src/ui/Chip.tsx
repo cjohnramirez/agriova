@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { color, radius, space } from '@/theme/tokens';
@@ -16,10 +17,12 @@ type ChipProps = {
   tone?: keyof typeof tones;
   /** A status dot before the label, as in "● 2 Ongoing". */
   dot?: string;
+  /** A leading icon, as in the hero's location pill. */
+  icon?: LucideIcon;
 };
 
 /** A read-only status pill. For a selectable pill use `FilterPill`. */
-export function Chip({ label, tone = 'default', dot }: ChipProps) {
+export function Chip({ label, tone = 'default', dot, icon: Icon }: ChipProps) {
   const t = tones[tone];
   return (
     <View
@@ -30,6 +33,7 @@ export function Chip({ label, tone = 'default', dot }: ChipProps) {
       ]}
     >
       {dot ? <View style={[styles.dot, { backgroundColor: dot }]} /> : null}
+      {Icon ? <Icon size={16} color={t.fg} strokeWidth={2} /> : null}
       <Text variant="label" style={{ color: t.fg }}>
         {label}
       </Text>
