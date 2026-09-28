@@ -59,8 +59,12 @@ drizzle/        Generated SQL migrations (`npm run db:generate`)
 
 ## Status
 
-Done: design system, onboarding, all tabs on local data, record forms.
-Next: Supabase (real phone login, sync), then the AI assistant, then store
-release. Phone login is stubbed: any `9XXXXXXXXX` and any 6-digit code work.
+Done: design system, onboarding, all tabs on local data, record forms,
+Supabase schema with row level security, email sign-in, sync.
+Next: the AI assistant, then store release.
+
+Sign-in is by a 6-digit code sent to an email address (Supabase Auth, sent
+through Mailjet). Without Supabase keys in `.env.local` (see `.env.example`)
+the app signs in locally with any code and keeps everything on the phone.
 
 Branching and commit conventions: `docs/branching.md`.

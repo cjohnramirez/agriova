@@ -1,0 +1,18 @@
+<!-- The sign-in email. Paste this same body into the hosted project's
+     "Magic Link" and "Confirm signup" templates (Authentication > Emails).
+     Plain and short: many farmers read email on small, slow phones. -->
+<div style="font-family: Arial, sans-serif; max-width: 480px; color: #1f1f1f">
+  <p style="font-size: 16px">Ang imong code sa Agriova / Your Agriova code:</p>
+  <p
+    style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #123f2e; margin: 16px 0"
+  >
+    {{ .Token }}
+  </p>
+  <p style="font-size: 15px; color: #6b6b6b">
+    Isulat kini sa app. Mawala kini human sa 15 minutos.<br />
+    Type it into the app. It expires in 15 minutes.
+  </p>
+  <p style="font-size: 13px; color: #6b6b6b">
+    Kung wala ka mangayo niini, ayaw tagda. / If you did not ask for this, ignore this email.
+  </p>
+</div>

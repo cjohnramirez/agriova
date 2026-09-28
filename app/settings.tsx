@@ -11,8 +11,8 @@ import {
 } from 'lucide-react-native';
 import { Alert } from 'react-native';
 
-import { formatPhone } from '@/auth/phone';
 import { useSession } from '@/auth/SessionProvider';
+import { useSync } from '@/sync/SyncProvider';
 import { deviceRunner } from '@/db/client';
 import { seedDemoFarm } from '@/db/demo';
 import { todayLocal } from '@/db/units';
@@ -28,6 +28,13 @@ export default function Settings() {
   const { t, language, setLanguage } = useI18n();
   const router = useRouter();
   const { session, signOut } = useSession();
+  const { syncNow } = useSync();
+
+  // One last sync first: with signal, nothing unsent is lost on the way out.
+  const leave = async () => {
+    await syncNow();
+    await signOut();
+  };
 
   function confirm(message: string, action: string, onConfirm: () => void) {
     Alert.alert('', message, [
@@ -48,11 +55,7 @@ export default function Settings() {
       }
     >
       <Card gap="none">
-        <ListRow
-          icon={UserRound}
-          title={session?.profile?.name ?? ''}
-          subtitle={session ? `+63 ${formatPhone(session.phone)}` : undefined}
-        />
+        <ListRow icon={UserRound} title={session?.profile?.name ?? ''} subtitle={session?.email} />
       </Card>
 
       <Card gap="none">
@@ -83,7 +86,7 @@ export default function Settings() {
         <ListRow
           icon={LogOut}
           title={t('settingsLogout')}
-          onPress={() => confirm(t('settingsLogoutConfirm'), t('settingsLogout'), signOut)}
+          onPress={() => confirm(t('settingsLogoutConfirm'), t('settingsLogout'), leave)}
         />
         <ListRow
           icon={Trash2}

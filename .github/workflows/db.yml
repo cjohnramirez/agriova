@@ -1,0 +1,30 @@
+name: Database
+
+# Applies every migration to a fresh Postgres and runs the pgTAP tests in
+# supabase/tests: row level security, last-write-wins, ownership of foreign
+# keys. Runs only when the database changes.
+on:
+  pull_request:
+    branches: [dev, main]
+    paths: ['supabase/**']
+  push:
+    branches: [dev, main]
+    paths: ['supabase/**']
+
+concurrency:
+  group: db-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pgtap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start Postgres with the migrations applied
+        run: supabase db start
+      - name: Run pgTAP tests
+        run: supabase test db

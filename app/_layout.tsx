@@ -15,6 +15,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SessionProvider, useSession } from '@/auth/SessionProvider';
 import { DatabaseGate } from '@/db/DatabaseGate';
 import { I18nProvider } from '@/i18n';
+import { SyncProvider } from '@/sync/SyncProvider';
 import { color } from '@/theme/tokens';
 
 // The native splash stays up until fonts, the database and the stored session
@@ -61,43 +62,45 @@ function RootStack() {
   if (status === 'loading') return null;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: color.background },
-      }}
-    >
-      <Stack.Protected guard={status === 'signedOut'}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
+    <SyncProvider signedIn={status === 'ready'}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: color.background },
+        }}
+      >
+        <Stack.Protected guard={status === 'signedOut'}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={status === 'onboarding'}>
-        <Stack.Screen name="(onboarding)" />
-      </Stack.Protected>
+        <Stack.Protected guard={status === 'onboarding'}>
+          <Stack.Screen name="(onboarding)" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={status === 'ready'}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="notifications" />
-        <Stack.Screen name="statistics" />
-        <Stack.Screen name="plot/new" />
-        <Stack.Screen name="plot/[id]" />
-        <Stack.Screen
-          name="record/index"
-          options={{
-            presentation: 'formSheet',
-            sheetAllowedDetents: 'fitToContents',
-            sheetGrabberVisible: true,
-            sheetCornerRadius: 24,
-            contentStyle: { backgroundColor: color.background },
-          }}
-        />
-        <Stack.Screen name="record/[kind]" />
-      </Stack.Protected>
+        <Stack.Protected guard={status === 'ready'}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="notifications" />
+          <Stack.Screen name="statistics" />
+          <Stack.Screen name="plot/new" />
+          <Stack.Screen name="plot/[id]" />
+          <Stack.Screen
+            name="record/index"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: 'fitToContents',
+              sheetGrabberVisible: true,
+              sheetCornerRadius: 24,
+              contentStyle: { backgroundColor: color.background },
+            }}
+          />
+          <Stack.Screen name="record/[kind]" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={__DEV__}>
-        <Stack.Screen name="gallery" />
-      </Stack.Protected>
-    </Stack>
+        <Stack.Protected guard={__DEV__}>
+          <Stack.Screen name="gallery" />
+        </Stack.Protected>
+      </Stack>
+    </SyncProvider>
   );
 }

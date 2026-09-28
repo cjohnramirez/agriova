@@ -1,6 +1,6 @@
 import { onboardingStep, parseSession, statusOf, type Session } from './session';
 
-const base: Session = { userId: 'u1', phone: '9171234567' };
+const base: Session = { userId: 'u1', email: 'nena@gmail.com' };
 const profile = { name: 'Nena', barangay: 'Gusa' };
 
 describe('statusOf', () => {
@@ -22,7 +22,8 @@ describe('parseSession', () => {
     expect(parseSession(JSON.stringify({ ...base, profile }))).toEqual({ ...base, profile }));
   it('treats nothing stored as signed out', () => expect(parseSession(null)).toBeNull());
   // A corrupt value must never lock a farmer out of the app.
-  it.each(['{not json', '{}', '{"userId":1,"phone":"x"}'])('treats %p as signed out', (raw) =>
-    expect(parseSession(raw)).toBeNull(),
+  it.each(['{not json', '{}', '{"userId":1,"email":"x"}', '{"userId":"u1","phone":"9171234567"}'])(
+    'treats %p as signed out',
+    (raw) => expect(parseSession(raw)).toBeNull(),
   );
 });

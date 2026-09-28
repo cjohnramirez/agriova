@@ -1,7 +1,6 @@
 /**
- * The signed-in person, kept on the device. Until Supabase phone auth lands in
- * step 7, `userId` is a local UUID; the shape stays the same afterwards, with
- * the id coming from `auth.uid()` instead.
+ * The signed-in person, kept on the device. `userId` is the Supabase account
+ * id (`auth.uid()`), or a local UUID when no Supabase keys are configured.
  */
 export type Profile = {
   name: string;
@@ -11,8 +10,8 @@ export type Profile = {
 
 export type Session = {
   userId: string;
-  /** Ten national digits; see `phone.ts`. */
-  phone: string;
+  /** Normalized; see `email.ts`. */
+  email: string;
   profile?: Profile;
   /** Set once the farmer has added a first plot or chosen to skip it. */
   onboardedAt?: number;
@@ -40,7 +39,7 @@ export function parseSession(raw: string | null): Session | null {
   if (!raw) return null;
   try {
     const value = JSON.parse(raw) as Partial<Session>;
-    if (typeof value.userId !== 'string' || typeof value.phone !== 'string') return null;
+    if (typeof value.userId !== 'string' || typeof value.email !== 'string') return null;
     return value as Session;
   } catch {
     return null;

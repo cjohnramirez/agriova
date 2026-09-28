@@ -11,14 +11,15 @@ name: Record a season
 - launchApp:
     clearState: true
 
-# Onboarding, in English so the assertions read plainly.
+# Onboarding, in English so the assertions read plainly. Run against a build
+# without Supabase keys, where any 6-digit code signs in.
 - extendedWaitUntil:
     visible: English
     timeout: 180000
 - tapOn: English
 - tapOn: Continue
-- tapOn: Mobile number
-- inputText: '9171234567'
+- tapOn: Email address
+- inputText: nena@example.com
 - tapOn: Continue
 - extendedWaitUntil:
     visible: Enter the code

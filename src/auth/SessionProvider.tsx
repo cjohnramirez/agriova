@@ -1,4 +1,3 @@
-import { randomUUID } from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import {
   createContext,
@@ -10,6 +9,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import { authBackend, type AuthBackend } from '@/backend/auth';
+import { supabase } from '@/backend/supabase';
 import { resetLocalData } from '@/db/client';
 import { parseSession, statusOf, type Profile, type Session, type SessionStatus } from './session';
 
@@ -18,11 +19,13 @@ const STORAGE_KEY = 'agriova.session.v1';
 type SessionValue = {
   status: SessionStatus;
   session: Session | null;
+  /** Emails the code. Rejects with `AuthError` when it cannot be sent. */
+  sendCode: (email: string) => Promise<void>;
   /**
-   * Called after the code is confirmed. Until Supabase auth lands in step 7
-   * the code is not checked and the user id is a local UUID.
+   * Checks the code and signs in. A returning farmer's profile comes back from
+   * the server, so they skip onboarding and sync restores their farm.
    */
-  signIn: (phone: string) => Promise<void>;
+  verifyCode: (email: string, code: string) => Promise<void>;
   saveProfile: (profile: Profile) => Promise<void>;
   finishOnboarding: () => Promise<void>;
   /** Signs out and wipes local records, so the next person starts clean. */
@@ -34,17 +37,18 @@ const SessionContext = createContext<SessionValue | null>(null);
 /**
  * Holds the signed-in person and keeps them in the device's secure storage,
  * so a restart, a rotation or the OS killing the app does not log them out.
+ * Supabase keeps its own token separately; this is the app's view of who is
+ * here and how far through onboarding they are.
  */
-export function SessionProvider({ children }: { children: ReactNode }) {
+export function SessionProvider({
+  children,
+  backend = authBackend,
+}: {
+  children: ReactNode;
+  backend?: AuthBackend;
+}) {
   const [session, setSession] = useState<Session | null>(null);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    SecureStore.getItemAsync(STORAGE_KEY)
-      .then((raw) => setSession(parseSession(raw)))
-      .catch(() => setSession(null))
-      .finally(() => setLoaded(true));
-  }, []);
 
   const persist = useCallback(async (next: Session | null) => {
     setSession(next);
@@ -52,16 +56,51 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     else await SecureStore.deleteItemAsync(STORAGE_KEY);
   }, []);
 
-  const signIn = useCallback(
-    (phone: string) => persist({ userId: randomUUID(), phone }),
-    [persist],
+  useEffect(() => {
+    (async () => {
+      let stored = parseSession(await SecureStore.getItemAsync(STORAGE_KEY).catch(() => null));
+      // A session saved without a server account (from before sign-in was
+      // real, or after the token was revoked) cannot sync. Start over rather
+      // than let the farmer record into a ledger that will never back up.
+      if (stored && supabase) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.user.id !== stored.userId) {
+          await resetLocalData();
+          await SecureStore.deleteItemAsync(STORAGE_KEY);
+          stored = null;
+        }
+      }
+      setSession(stored);
+    })()
+      .catch(() => setSession(null))
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const sendCode = useCallback((email: string) => backend.sendCode(email), [backend]);
+
+  const verifyCode = useCallback(
+    async (email: string, code: string) => {
+      const { userId } = await backend.verifyCode(email, code);
+      // No signal after the code went through: onboarding asks again and the
+      // profile is saved then, which is better than blocking sign-in.
+      const profile = await backend.fetchProfile(userId).catch(() => null);
+      await persist({
+        userId,
+        email,
+        ...(profile ? { profile, onboardedAt: Date.now() } : {}),
+      });
+    },
+    [backend, persist],
   );
 
   const saveProfile = useCallback(
     async (profile: Profile) => {
-      if (session) await persist({ ...session, profile });
+      if (!session) return;
+      await persist({ ...session, profile });
+      // Best effort: onboarding must work in a field with no signal.
+      await backend.saveProfile(session.userId, profile).catch(() => {});
     },
-    [persist, session],
+    [backend, persist, session],
   );
 
   const finishOnboarding = useCallback(async () => {
@@ -69,20 +108,22 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [persist, session]);
 
   const signOut = useCallback(async () => {
+    await backend.signOut().catch(() => {});
     await resetLocalData();
     await persist(null);
-  }, [persist]);
+  }, [backend, persist]);
 
   const value = useMemo<SessionValue>(
     () => ({
       status: loaded ? statusOf(session) : 'loading',
       session,
-      signIn,
+      sendCode,
+      verifyCode,
       saveProfile,
       finishOnboarding,
       signOut,
     }),
-    [loaded, session, signIn, saveProfile, finishOnboarding, signOut],
+    [loaded, session, sendCode, verifyCode, saveProfile, finishOnboarding, signOut],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 
-import { formatPhone, isValidCode } from '@/auth/phone';
+import { isValidCode } from '@/auth/email';
 import { useSession } from '@/auth/SessionProvider';
+import { AuthError } from '@/backend/auth';
 import { useI18n } from '@/i18n';
 import { FormScreen } from '@/shell/FormScreen';
 import { Button, TextField } from '@/ui';
@@ -10,33 +11,53 @@ import { Button, TextField } from '@/ui';
 export default function Code() {
   const { t } = useI18n();
   const router = useRouter();
-  const { signIn } = useSession();
-  const { phone = '' } = useLocalSearchParams<{ phone: string }>();
+  const { sendCode, verifyCode } = useSession();
+  const { email = '' } = useLocalSearchParams<{ email: string }>();
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   async function onVerify() {
     if (!isValidCode(code)) {
       setError(t('loginInvalidCode'));
       return;
     }
-    // Step 7 checks the code with Supabase. Until then any six digits pass.
-    // No navigation needed: the route guards move the farmer on.
+    // No navigation on success: the route guards move the farmer on.
     setBusy(true);
-    await signIn(phone);
+    try {
+      await verifyCode(email, code);
+    } catch (cause) {
+      setError(
+        cause instanceof AuthError && cause.reason === 'wrongCode'
+          ? t('loginWrongCode')
+          : t('loginSendFailed'),
+      );
+      setBusy(false);
+    }
+  }
+
+  async function onResend() {
+    setError(null);
+    try {
+      await sendCode(email);
+      setNotice(t('loginCodeResent'));
+    } catch {
+      setError(t('loginSendFailed'));
+    }
   }
 
   return (
     <FormScreen
       title={t('loginCodeTitle')}
-      subtitle={t('loginCodeSubtitle', { phone: `+63 ${formatPhone(phone)}` })}
+      subtitle={t('loginCodeSubtitle', { email })}
       footer={
         <>
           <Button label={t('loginVerify')} onPress={onVerify} disabled={busy} block />
+          <Button variant="secondary" label={t('loginResend')} onPress={onResend} block />
           <Button
             variant="secondary"
-            label={t('loginChangeNumber')}
+            label={t('loginChangeEmail')}
             onPress={() => router.back()}
             block
           />
@@ -45,6 +66,7 @@ export default function Code() {
     >
       <TextField
         label={t('loginCodeTitle')}
+        hint={notice ?? undefined}
         error={error}
         size="large"
         value={code}

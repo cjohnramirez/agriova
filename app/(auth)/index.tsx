@@ -39,7 +39,7 @@ export default function Welcome() {
       </View>
 
       <View style={styles.footer}>
-        <Button label={t('continue')} onPress={() => router.push('/phone')} block />
+        <Button label={t('continue')} onPress={() => router.push('/email')} block />
       </View>
     </SafeAreaView>
   );

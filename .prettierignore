@@ -9,3 +9,6 @@ package-lock.json
 docs/
 .claude/
 *.md
+
+# Supabase CLI state (gitignored)
+supabase/.temp
