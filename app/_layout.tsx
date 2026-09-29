@@ -76,6 +76,8 @@ function RootStack() {
         <Stack.Protected guard={status === 'ready'}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="settings" />
+          <Stack.Screen name="about" />
+          <Stack.Screen name="help" />
           <Stack.Screen name="notifications" />
           <Stack.Screen name="statistics" />
           <Stack.Screen name="plot/new" />

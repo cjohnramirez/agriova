@@ -277,6 +277,30 @@ const en = {
   settingsDeleteConfirm:
     'This removes your account and every record on this phone. It cannot be undone.',
   settingsDeleteAction: 'Delete',
+  settingsDeleting: 'Deleting your account…',
+  settingsDeleteFailed:
+    'Your account could not be deleted. Check that you have signal, then try again.',
+
+  aboutTitle: 'About Agriova',
+  aboutVersion: 'Version',
+  aboutPrivacy: 'Privacy policy',
+  aboutWeather: 'Weather data by Open-Meteo.com (CC BY 4.0)',
+  aboutSummary:
+    'A farm ledger for small farmers. Record what you plant, spend, harvest and sell, and see what the season is earning.',
+
+  helpTitle: 'Help center',
+  helpRecordQ: 'How do I record something?',
+  helpRecordA:
+    'Tap the + button on any tab, then choose expense, harvest or sale. Each takes a few numbers.',
+  helpOfflineQ: 'Does it work without signal?',
+  helpOfflineA:
+    'Yes. Everything is saved on your phone first and sent to your account when you have signal again.',
+  helpPhoneQ: 'I changed phones. Is my farm lost?',
+  helpPhoneA: 'No. Sign in with the same email on the new phone and your records come back.',
+  helpAssistantQ: 'Why did the assistant stop answering?',
+  helpAssistantA:
+    'Each farmer can ask 20 questions a day. Questions asked without signal are answered once you are back online.',
+  helpContact: 'Email us',
 
   notificationsTitle: 'Notifications',
   notificationsEmpty: 'No notifications yet.',
@@ -546,6 +570,31 @@ const bis: Catalog = {
   settingsDeleteConfirm:
     'Mapapas ang imong account ug tanang sinulat niining cellphone. Dili na kini mabalik.',
   settingsDeleteAction: 'Papasa',
+  settingsDeleting: 'Gipapas ang imong account…',
+  settingsDeleteFailed:
+    'Wala mapapas ang imong account. Siguroha nga naa kay signal, dayon sulayi pag-usab.',
+
+  aboutTitle: 'Bahin sa Agriova',
+  aboutVersion: 'Bersyon',
+  aboutPrivacy: 'Palisiya sa privacy',
+  aboutWeather: 'Datos sa panahon gikan sa Open-Meteo.com (CC BY 4.0)',
+  aboutSummary:
+    'Talaan sa uma para sa gagmayng mag-uuma. Isulat ang imong gitanom, gigasto, giani ug gibaligya, ug tan-awa ang kita sa panahon.',
+
+  helpTitle: 'Tabang',
+  helpRecordQ: 'Unsaon nako pagsulat og rekord?',
+  helpRecordA:
+    'Pindota ang + sa bisan unsang tab, dayon pilia ang gasto, ani o benta. Pipila lang ka numero ang isulat.',
+  helpOfflineQ: 'Mogana ba kini bisan walay signal?',
+  helpOfflineA:
+    'Oo. Ang tanan matipigan una sa imong cellphone ug ipadala sa imong account inig balik sa signal.',
+  helpPhoneQ: 'Nag-ilis ko og cellphone. Nawala ba ang akong uma?',
+  helpPhoneA:
+    'Wala. Sulod gamit ang samang email sa bag-ong cellphone ug mobalik ang imong mga rekord.',
+  helpAssistantQ: 'Nganong mihunong og tubag ang katabang?',
+  helpAssistantA:
+    'Matag mag-uuma makapangutana og 20 ka beses kada adlaw. Ang pangutana nga walay signal tubagon inig balik sa signal.',
+  helpContact: 'I-email mi',
 
   notificationsTitle: 'Mga pahibalo',
   notificationsEmpty: 'Wala pay pahibalo.',

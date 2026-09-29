@@ -431,3 +431,8 @@ enabled = true
 # which works with Supabase's newer signing keys, so the gateway check is off.
 [functions.ai-chat]
 verify_jwt = false
+
+# Account deletion. Checks the caller the same way, then deletes them with the
+# service role, which stays on the server.
+[functions.delete-account]
+verify_jwt = false

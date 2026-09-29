@@ -42,6 +42,9 @@ dropped or rejected, and a farmer's record never reaches their other phone.
 - Anything that needs the service role (deleting an account, writing prices)
   is an Edge Function, never the app. The app only ever holds the publishable
   key.
+- A new farmer table must reference `auth.users (id) on delete cascade`
+  through `owner_id`: account deletion (`delete-account`) relies on the
+  cascade, and `delete_account.test.sql` must list the new table.
 
 ## Checking
 

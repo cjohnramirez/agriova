@@ -9,6 +9,7 @@ import {
   Trash2,
   UserRound,
 } from 'lucide-react-native';
+import { useState } from 'react';
 import { Alert } from 'react-native';
 
 import { useSession } from '@/auth/SessionProvider';
@@ -27,13 +28,27 @@ import { Card, ListRow, Screen, ScreenHeader } from '@/ui';
 export default function Settings() {
   const { t, language, setLanguage } = useI18n();
   const router = useRouter();
-  const { session, signOut } = useSession();
+  const { session, signOut, deleteAccount } = useSession();
+  const [deleting, setDeleting] = useState(false);
   const { syncNow } = useSync();
 
   // One last sync first: with signal, nothing unsent is lost on the way out.
   const leave = async () => {
     await syncNow();
     await signOut();
+  };
+
+  // The server deletes first; only then is the phone wiped. Without signal
+  // nothing changes, so the farmer never believes a surviving account is gone.
+  // On success the guard leaves this screen, so there is no state to reset.
+  const remove = async () => {
+    setDeleting(true);
+    try {
+      await deleteAccount();
+    } catch {
+      setDeleting(false);
+      Alert.alert('', t('settingsDeleteFailed'));
+    }
   };
 
   function confirm(message: string, action: string, onConfirm: () => void) {
@@ -65,8 +80,8 @@ export default function Settings() {
           value={LANGUAGE_NAMES[language]}
           onPress={() => setLanguage(language === 'bis' ? 'en' : 'bis')}
         />
-        <ListRow icon={CircleHelp} title={t('settingsHelp')} onPress={() => {}} />
-        <ListRow icon={Info} title={t('settingsAbout')} onPress={() => {}} />
+        <ListRow icon={CircleHelp} title={t('settingsHelp')} onPress={() => router.push('/help')} />
+        <ListRow icon={Info} title={t('settingsAbout')} onPress={() => router.push('/about')} />
       </Card>
 
       {__DEV__ && session ? (
@@ -92,8 +107,12 @@ export default function Settings() {
           icon={Trash2}
           title={t('settingsDelete')}
           tone="danger"
-          // Step 7 also deletes the server-side account before signing out.
-          onPress={() => confirm(t('settingsDeleteConfirm'), t('settingsDeleteAction'), signOut)}
+          subtitle={deleting ? t('settingsDeleting') : undefined}
+          onPress={
+            deleting
+              ? undefined
+              : () => confirm(t('settingsDeleteConfirm'), t('settingsDeleteAction'), remove)
+          }
         />
       </Card>
     </Screen>

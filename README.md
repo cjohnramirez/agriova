@@ -44,6 +44,8 @@ src/features/   Pieces shared by screens (finance card, record forms)
 src/i18n/       Strings in Bisaya and English, dates, labels
 src/rules/      On-device rules (spoilage countdown)
 drizzle/        Generated SQL migrations (`npm run db:generate`)
+supabase/       Server migrations, pgTAP tests, Edge Functions (ai-chat, delete-account)
+docs/           Privacy policy, store listing and privacy form drafts
 .maestro/       End-to-end flows
 ```
 
@@ -63,7 +65,10 @@ Done: design system, onboarding, all tabs on local data, record forms,
 Supabase schema with row level security, email sign-in, sync, and the farm
 assistant: weather and spoilage advice worked out on the phone, plus a chat
 (Gemini, through the `ai-chat` Edge Function in `supabase/functions/`).
-Next: store release.
+Release setup: EAS build profiles and over-the-air updates (`eas.json`),
+in-app account deletion (the `delete-account` Edge Function), privacy manifest,
+privacy policy and store listing drafts (`docs/`). Before the first store
+release see `.claude/skills/release-checklist`.
 
 Sign-in is by a 6-digit code sent to an email address (Supabase Auth, sent
 through Mailjet). Without Supabase keys in `.env.local` (see `.env.example`)

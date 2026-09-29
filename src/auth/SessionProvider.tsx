@@ -30,6 +30,11 @@ type SessionValue = {
   finishOnboarding: () => Promise<void>;
   /** Signs out and wipes local records, so the next person starts clean. */
   signOut: () => Promise<void>;
+  /**
+   * Deletes the account on the server, then wipes the phone. Rejects with
+   * `AuthError` and changes nothing when the server could not be reached.
+   */
+  deleteAccount: () => Promise<void>;
 };
 
 const SessionContext = createContext<SessionValue | null>(null);
@@ -113,6 +118,13 @@ export function SessionProvider({
     await persist(null);
   }, [backend, persist]);
 
+  const deleteAccount = useCallback(async () => {
+    await backend.deleteAccount();
+    await backend.signOut().catch(() => {});
+    await resetLocalData();
+    await persist(null);
+  }, [backend, persist]);
+
   const value = useMemo<SessionValue>(
     () => ({
       status: loaded ? statusOf(session) : 'loading',
@@ -122,8 +134,9 @@ export function SessionProvider({
       saveProfile,
       finishOnboarding,
       signOut,
+      deleteAccount,
     }),
-    [loaded, session, sendCode, verifyCode, saveProfile, finishOnboarding, signOut],
+    [loaded, session, sendCode, verifyCode, saveProfile, finishOnboarding, signOut, deleteAccount],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

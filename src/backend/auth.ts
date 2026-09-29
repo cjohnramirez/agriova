@@ -23,6 +23,12 @@ export interface AuthBackend {
   fetchProfile(userId: string): Promise<Profile | null>;
   saveProfile(userId: string, profile: Profile): Promise<void>;
   signOut(): Promise<void>;
+  /**
+   * Deletes the account and everything it owns on the server. Rejects with
+   * `AuthError('network')` if that did not happen, so the phone is not wiped
+   * while the server copy survives.
+   */
+  deleteAccount(): Promise<void>;
 }
 
 /** Why a sign-in step failed, in the terms the screen shows. */
@@ -74,6 +80,12 @@ function onlineBackend(client: SupabaseClient): AuthBackend {
       // Local sign-out still clears the phone if the server cannot be reached.
       await client.auth.signOut({ scope: 'local' });
     },
+
+    async deleteAccount() {
+      // The service role that can delete users lives only in this function.
+      const { error } = await client.functions.invoke('delete-account', { method: 'POST' });
+      if (error) throw new AuthError('network');
+    },
   };
 }
 
@@ -92,6 +104,7 @@ const local: AuthBackend = {
   },
   async saveProfile() {},
   async signOut() {},
+  async deleteAccount() {},
 };
 
 export const authBackend: AuthBackend = supabase ? onlineBackend(supabase) : local;
