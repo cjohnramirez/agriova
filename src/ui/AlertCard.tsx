@@ -35,7 +35,7 @@ export function AlertCard({ kind, title, body, action }: AlertCardProps) {
   return (
     <GradientCard gradient={k.gradient}>
       <View style={styles.head} accessible accessibilityRole="summary">
-        <Icon size={22} color={color.textOnBrand} strokeWidth={2} />
+        <Icon size={22} color={color.textOnBrand} />
         <Text variant="bodyStrong" tone="onBrand" style={styles.title}>
           {title}
         </Text>

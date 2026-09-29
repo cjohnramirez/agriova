@@ -1,23 +1,11 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { ImageBackground, StyleSheet, type ImageSourcePropType } from 'react-native';
+import { ImageBackground, StyleSheet, View, type ImageSourcePropType } from 'react-native';
 
-import { layout, scrim, space } from '@/theme/tokens';
-
-/** '#123F2E' at 0.72 → 'rgba(18,63,46,0.72)'. */
-function withAlpha(hex: string, alpha: number): string {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  return `rgba(${r},${g},${b},${alpha})`;
-}
-
-const STRONG = withAlpha(scrim.color, scrim.strong);
-const SOFT = withAlpha(scrim.color, scrim.soft);
+import { layout, photoOverlay, space } from '@/theme/tokens';
 
 /**
- * The prototype's signature Home hero: a farm photo edge to edge under a
- * brand-green tint, with white text over it. The tint is strong over the top
- * `scrim.textZone`, where text goes, and fades below so the field shows
- * through behind the cards. Keep text in the top part; put cards below.
+ * The prototype's Home hero: a photo edge to edge right under the top bar,
+ * with a flat black tint so white text reads over it.
  */
 export function PhotoHero({
   source,
@@ -33,11 +21,7 @@ export function PhotoHero({
       style={styles.hero}
       accessibilityIgnoresInvertColors
     >
-      <LinearGradient
-        colors={[STRONG, STRONG, SOFT]}
-        locations={[0, scrim.textZone, 1]}
-        style={StyleSheet.absoluteFill}
-      />
+      <View style={[StyleSheet.absoluteFill, styles.tint]} />
       {children}
     </ImageBackground>
   );
@@ -45,10 +29,13 @@ export function PhotoHero({
 
 const styles = StyleSheet.create({
   hero: {
+    // Out to the screen edges and up against the top bar, as in the frame.
     marginHorizontal: layout.bleed,
-    paddingHorizontal: layout.screenPadding,
-    paddingVertical: space.xl,
-    gap: space.lg,
+    marginTop: -space.lg,
+    paddingTop: space.xxl,
+    paddingBottom: space.xl,
+    gap: space.md,
     overflow: 'hidden',
   },
+  tint: { backgroundColor: photoOverlay },
 });

@@ -56,7 +56,7 @@ export function Button({
       ]}
     >
       <View style={styles.row}>
-        {Icon ? <Icon size={22} color={fg} strokeWidth={2} /> : null}
+        {Icon ? <Icon size={22} color={fg} /> : null}
         <Text variant="bodyStrong" style={{ color: fg }}>
           {label}
         </Text>

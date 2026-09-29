@@ -51,7 +51,8 @@ beforeEach(() => jest.clearAllMocks());
 describe('Home', () => {
   it('leads with the season’s earnings', async () => {
     await renderScreen(<Home />);
-    expect(screen.getByText('₱530.00')).toBeOnTheScreen();
+    // The hero comes first; the finance card below repeats the same net.
+    expect(screen.getAllByText('₱530.00')[0]).toBeOnTheScreen();
     expect(screen.getByText('Sold ₱12,510')).toBeOnTheScreen();
     expect(screen.getByText('Spent ₱11,980')).toBeOnTheScreen();
   });
@@ -83,13 +84,13 @@ describe('Home', () => {
       [todayLocal(), TEST_OWNER],
     );
     await changed();
-    expect(screen.getByText('₱1,030.00')).toBeOnTheScreen();
+    expect(screen.getAllByText('₱1,030.00')[0]).toBeOnTheScreen();
     expect(screen.getByText('40 kg Tomato')).toBeOnTheScreen();
   });
 
   it('invites the first sale when there are no records', async () => {
     await renderScreen(<Home />, { farm: false });
-    expect(screen.getByText('₱0.00')).toBeOnTheScreen();
+    expect(screen.getAllByText('₱0.00')[0]).toBeOnTheScreen();
     expect(screen.getByText('Record a sale and your earnings will show here.')).toBeOnTheScreen();
     expect(screen.queryByText('Latest records')).toBeNull();
   });

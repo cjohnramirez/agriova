@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Bell, Plus } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSession } from '@/auth/SessionProvider';
 import { useProduceOnHand } from '@/features/useProduceOnHand';
@@ -54,16 +55,25 @@ export function TabScreen({ children, showRecord = true }: TabScreenProps) {
  * The one way to add anything: a labelled pill, not a bare "+". An icon alone
  * is ambiguous to a first-time user; "Itala" says what it does.
  */
+/**
+ * On iOS the system tab bar floats over the content (Liquid Glass), so the
+ * button sits above it: the safe area plus the bar's height. Android's custom
+ * bar takes its own space, so there the screen already ends above it.
+ */
+const IOS_TAB_BAR = 56;
+
 function RecordButton({ label }: { label: string }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const bottom = Platform.OS === 'ios' ? insets.bottom + IOS_TAB_BAR + space.lg : space.lg;
   return (
     <Pressable
       onPress={() => router.push('/record')}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+      style={({ pressed }) => [styles.fab, { bottom }, pressed && styles.fabPressed]}
     >
-      <Plus size={24} color={color.textOnBrand} strokeWidth={2.5} />
+      <Plus size={24} color={color.textOnBrand} />
       <Text variant="bodyStrong" tone="onBrand">
         {label}
       </Text>
@@ -76,7 +86,6 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: layout.screenPadding,
-    bottom: space.lg,
     minHeight: layout.minTouch,
     paddingHorizontal: space.xl,
     borderRadius: radius.pill,

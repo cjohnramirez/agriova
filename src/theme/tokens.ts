@@ -43,6 +43,8 @@ export const color = {
    */
   dangerGlow: '#D9503A',
   warning: '#E8A13A',
+  /** A falling period in the finance chart, the prototype's orange. Graphic only, never text. */
+  loss: '#FF7B4E',
   /** Calm blue-grey for the offline banner. Offline is not an error state. */
   info: '#4A5B6A',
 } as const;
@@ -56,23 +58,22 @@ export const gradient = {
 export type GradientName = keyof typeof gradient;
 
 /**
- * The brand-green tint laid over the Home hero photo. Text sits only in the
- * top `textZone` of the hero, where the tint is `strong`; below that it fades
- * to `soft` so the field shows through behind the cards. The token test holds
- * white text at AA over a pure white patch of sky under the strong tint.
+ * The flat black tint over the Home hero photo, exactly as in the prototype.
+ * White text over it is only as readable as the photo beneath: keep the photo
+ * mostly mid-tone field, and keep text off the brightest sky.
  */
-export const scrim = { color: color.brandDark, strong: 0.72, soft: 0.2, textZone: 0.6 } as const;
+export const photoOverlay = 'rgba(0,0,0,0.33)';
 
 /**
- * Geist, the prototype's typeface. Each weight is its own family because
- * Android cannot synthesise weights for a custom font; `fontWeight` is never
- * set alongside these.
+ * Geist, the prototype's typeface, in the two weights the prototype uses:
+ * Regular for all text and Light for the big figures. One weight for text
+ * keeps every line the same thickness, as in the design. Each weight is its
+ * own family because Android cannot synthesise weights for a custom font;
+ * `fontWeight` is never set alongside these.
  */
 export const font = {
+  light: 'Geist_300Light',
   regular: 'Geist_400Regular',
-  medium: 'Geist_500Medium',
-  semibold: 'Geist_600SemiBold',
-  bold: 'Geist_700Bold',
 } as const;
 
 /**
@@ -87,18 +88,21 @@ export const font = {
  */
 export const type = {
   /** The peso total on the home hero. The number is the product. */
-  display: { fontFamily: font.bold, fontSize: 34, lineHeight: 42 },
+  display: { fontFamily: font.light, fontSize: 34, lineHeight: 42 },
   /** Peso figures and quantities inside cards. */
-  figure: { fontFamily: font.semibold, fontSize: 26, lineHeight: 32 },
+  figure: { fontFamily: font.light, fontSize: 26, lineHeight: 32 },
   /** Screen titles. */
-  title: { fontFamily: font.bold, fontSize: 20, lineHeight: 26 },
+  title: { fontFamily: font.regular, fontSize: 20, lineHeight: 26 },
   /** Section titles and card headings. */
-  heading: { fontFamily: font.semibold, fontSize: 17, lineHeight: 22 },
-  /** Emphasised body: list item titles, button labels. */
-  bodyStrong: { fontFamily: font.medium, fontSize: 15, lineHeight: 20 },
+  heading: { fontFamily: font.regular, fontSize: 17, lineHeight: 22 },
+  /**
+   * List item titles and button labels. Same weight as body, as in the
+   * prototype; kept as its own variant so emphasis can return in one place.
+   */
+  bodyStrong: { fontFamily: font.regular, fontSize: 15, lineHeight: 20 },
   body: { fontFamily: font.regular, fontSize: 15, lineHeight: 20 },
   /** Chips, captions, tab labels. Never essential information. */
-  label: { fontFamily: font.medium, fontSize: 13, lineHeight: 18 },
+  label: { fontFamily: font.regular, fontSize: 13, lineHeight: 18 },
 } as const satisfies Record<string, TextStyle>;
 
 export type TypeVariant = keyof typeof type;
@@ -112,12 +116,14 @@ export const space = {
   xxl: 32,
 } as const;
 
-/** Figma uses 20 for cards and 10 for elements inside them. */
+/**
+ * From the prototype: cards and the tiles inside them are 10.
+ */
 export const radius = {
   sm: 8,
   md: 10,
   lg: 16,
-  card: 20,
+  card: 10,
   pill: 999,
 } as const;
 

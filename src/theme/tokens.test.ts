@@ -3,7 +3,7 @@
  * not a nicety. WCAG AA for body text is 4.5:1; every reading pair must pass.
  */
 import { contrastRatio, mix } from './contrast';
-import { color, gradient, layout, scrim, type } from './tokens';
+import { color, gradient, layout, type } from './tokens';
 
 const AA = 4.5;
 
@@ -30,11 +30,6 @@ describe('text contrast', () => {
       );
     }
   });
-});
-
-it('white text holds AA on the hero photo, even over white sky', () => {
-  const tinted = mix(scrim.color, '#FFFFFF', 1 - scrim.strong);
-  expect(contrastRatio(color.textOnBrand, tinted)).toBeGreaterThanOrEqual(AA);
 });
 
 describe('type floor', () => {

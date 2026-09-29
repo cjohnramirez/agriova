@@ -69,7 +69,7 @@ export default function Home() {
           onPress: () => router.push('/statistics'),
         }}
       >
-        <FinanceCard totals={false} />
+        <FinanceCard />
         <Tiles>
           <MetricTile
             icon={Ruler}

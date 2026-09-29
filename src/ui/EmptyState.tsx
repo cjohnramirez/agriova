@@ -18,7 +18,7 @@ export function EmptyState({ icon: Icon, title, body, action }: EmptyStateProps)
   return (
     <Card padding="hero" style={styles.card}>
       <View style={styles.iconWrap}>
-        <Icon size={32} color={color.accent} strokeWidth={1.75} />
+        <Icon size={32} color={color.accent} />
       </View>
       <Text variant="heading" style={styles.center}>
         {title}
@@ -28,7 +28,12 @@ export function EmptyState({ icon: Icon, title, body, action }: EmptyStateProps)
           {body}
         </Text>
       ) : null}
-      {action ? <Button label={action.label} onPress={action.onPress} /> : null}
+      {action ? (
+        // Buttons hug their label from the left; this wrapper puts it in the middle.
+        <View style={styles.action}>
+          <Button label={action.label} onPress={action.onPress} />
+        </View>
+      ) : null}
     </Card>
   );
 }
@@ -45,4 +50,5 @@ const styles = StyleSheet.create({
     marginBottom: space.xs,
   },
   center: { textAlign: 'center' },
+  action: { alignSelf: 'center' },
 });

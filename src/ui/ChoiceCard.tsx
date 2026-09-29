@@ -29,7 +29,7 @@ export function ChoiceCard({ title, hint, icon: Icon, onPress, selected }: Choic
     >
       {Icon ? (
         <View style={styles.tile}>
-          <Icon size={28} color={color.accent} strokeWidth={1.75} />
+          <Icon size={28} color={color.accent} />
         </View>
       ) : null}
       <View style={styles.text}>
@@ -38,7 +38,7 @@ export function ChoiceCard({ title, hint, icon: Icon, onPress, selected }: Choic
       </View>
       {isChoice ? (
         <View style={[styles.radio, selected && styles.radioOn]}>
-          {selected ? <Check size={18} color={color.textOnBrand} strokeWidth={3} /> : null}
+          {selected ? <Check size={18} color={color.textOnBrand} /> : null}
         </View>
       ) : (
         <ChevronRight size={24} color={color.textFaint} />

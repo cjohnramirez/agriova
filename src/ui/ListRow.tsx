@@ -38,7 +38,7 @@ export function ListRow({
 
   const content = (
     <>
-      {Icon ? <Icon size={22} color={fg} strokeWidth={1.75} /> : null}
+      {Icon ? <Icon size={22} color={fg} /> : null}
       <View style={styles.text}>
         <Text variant="bodyStrong" style={{ color: fg }}>
           {title}

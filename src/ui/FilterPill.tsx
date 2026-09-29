@@ -52,7 +52,7 @@ export function FilterPills<K extends string>({
               pressed && !isOn && styles.pressed,
             ]}
           >
-            {isOn ? <Check size={18} color={color.textOnBrand} strokeWidth={2.5} /> : null}
+            {isOn ? <Check size={18} color={color.textOnBrand} /> : null}
             <Text variant="label" tone={isOn ? 'onBrand' : 'default'}>
               {option.label}
             </Text>

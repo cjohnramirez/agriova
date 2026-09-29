@@ -1,4 +1,4 @@
-import { Wallet } from 'lucide-react-native';
+import { HandCoins } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { useOwnerId } from '@/auth/SessionProvider';
@@ -13,14 +13,12 @@ import { Card, StepChart, Text } from '@/ui';
 const MONTHS = 6;
 
 /**
- * The prototype's "Finances Tracker", fed by the farmer's own ledger: a running
- * balance over six months, the net for the period, and what came in and went
- * out. A month that lost money shows as a red step down.
- *
- * Home passes `totals={false}`: its hero already shows the money, and the same
- * figures twice in a row read as two different numbers.
+ * The prototype's "Finances Tracker", fed by the farmer's own ledger. Laid out
+ * as in the frame: a small title with its icon, the stepped chart, then the
+ * period's net in light figures on the left and the two lines that make it up
+ * on the right, each a grey label beside a black amount.
  */
-export function FinanceCard({ totals = true }: { totals?: boolean }) {
+export function FinanceCard() {
   const { t, language } = useI18n();
   const ownerId = useOwnerId();
   const today = todayLocal();
@@ -33,11 +31,11 @@ export function FinanceCard({ totals = true }: { totals?: boolean }) {
 
   return (
     <Card>
-      <View style={styles.head}>
-        <Text variant="bodyStrong" style={styles.flex}>
+      <View style={styles.title}>
+        <Text variant="label" style={styles.flex}>
           {t('financeTitle')}
         </Text>
-        <Wallet size={22} color={color.accent} strokeWidth={1.75} />
+        <HandCoins size={16} color={color.text} />
       </View>
       <StepChart
         values={balance}
@@ -46,30 +44,42 @@ export function FinanceCard({ totals = true }: { totals?: boolean }) {
           end: formatMonthShort(months[months.length - 1].month, language),
         })}
       />
-      {totals ? (
-        <>
-          <View>
-            <Text tone="muted">{t('financeCaption')}</Text>
-            <Text variant="figure" tone={sold - spent < 0 ? 'danger' : 'accent'} numeric>
-              {formatPesos(sold - spent)}
-            </Text>
-          </View>
-          <View style={styles.split}>
-            <Text tone="muted" numeric>
-              {t('homeSold')} {formatPesos(sold)}
-            </Text>
-            <Text tone="muted" numeric>
-              {t('homeSpent')} {formatPesos(spent)}
-            </Text>
-          </View>
-        </>
-      ) : null}
+      <View style={styles.totals}>
+        <View style={styles.flex}>
+          <Text variant="label">{t('financeCaption')}</Text>
+          <Text variant="figure" numeric>
+            {formatPesos(sold - spent)}
+          </Text>
+        </View>
+        <View style={styles.lines}>
+          <Line label={t('homeSpent')} value={formatPesos(spent)} />
+          <Line label={t('homeSold')} value={formatPesos(sold)} />
+        </View>
+      </View>
     </Card>
   );
 }
 
+function Line({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.line}>
+      <Text variant="label" style={styles.faint}>
+        {label}
+      </Text>
+      <Text variant="label" numeric>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  head: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  title: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   flex: { flex: 1 },
-  split: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.xs },
+  totals: { flexDirection: 'row', alignItems: 'flex-end', gap: space.md },
+  lines: { gap: space.xs, paddingBottom: space.xs },
+  line: { flexDirection: 'row', justifyContent: 'space-between', gap: space.md },
+  // The prototype's grey for these two labels. The amounts beside them carry
+  // the meaning, so the label may be lighter than the AA reading colours.
+  faint: { color: color.textFaint },
 });

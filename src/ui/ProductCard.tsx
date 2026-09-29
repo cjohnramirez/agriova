@@ -31,7 +31,7 @@ export function ProductCard({ name, price, per, seller, photoUri, onPress }: Pro
         {photoUri ? (
           <Image source={{ uri: photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : (
-          <Package size={40} color={color.textFaint} strokeWidth={1.5} />
+          <Package size={40} color={color.textFaint} />
         )}
       </View>
       <View style={styles.body}>
@@ -43,7 +43,7 @@ export function ProductCard({ name, price, per, seller, photoUri, onPress }: Pro
         </Text>
         <Text tone="muted">{per}</Text>
         <View style={styles.seller}>
-          <Store size={18} color={color.accent} strokeWidth={1.75} />
+          <Store size={18} color={color.accent} />
           <Text variant="label" tone="accent" style={styles.sellerName}>
             {seller}
           </Text>

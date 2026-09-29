@@ -33,7 +33,7 @@ export function Chip({ label, tone = 'default', dot, icon: Icon }: ChipProps) {
       ]}
     >
       {dot ? <View style={[styles.dot, { backgroundColor: dot }]} /> : null}
-      {Icon ? <Icon size={16} color={t.fg} strokeWidth={2} /> : null}
+      {Icon ? <Icon size={16} color={t.fg} /> : null}
       <Text variant="label" style={{ color: t.fg }}>
         {label}
       </Text>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     gap: space.xs,
     paddingVertical: space.xs,
-    paddingHorizontal: space.md,
+    paddingHorizontal: space.sm,
     borderRadius: radius.pill,
   },
   dot: { width: 8, height: 8, borderRadius: radius.pill },

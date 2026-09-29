@@ -1,26 +1,32 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { CalendarDays, MapPin, Plus, Sprout } from 'lucide-react-native';
+import { CalendarDays, Clock, MapPin, Plus } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useSession } from '@/auth/SessionProvider';
 import { cropName, type CycleSummary, type SeasonTotals } from '@/db/read';
 import { formatPesos, todayLocal } from '@/db/units';
 import { useI18n } from '@/i18n';
-import { formatDateLong } from '@/i18n/dates';
+import { formatDate, formatDateLong } from '@/i18n/dates';
 import { statusLabel } from '@/i18n/labels';
-import { color, gradient, layout, radius, space } from '@/theme/tokens';
+import { color, radius, space } from '@/theme/tokens';
 import { Chip, PhotoHero, Text } from '@/ui';
 
 const HERO_PHOTO = require('../../assets/images/hero-field.jpg');
-/** Wide enough for "Kalabasa" and a plot name on two lines at 1.3x text. */
-const CARD_WIDTH = 176;
+
+/** The prototype's 128×110 schedule cards, widened for the app's larger type. */
+const CARD_WIDTH = 150;
+const CARD_HEIGHT = 128;
+
+/** The first card's green: the prototype's radial gradient, dark corner to light. */
+const FEATURED = ['#0C3B32', '#396F39', '#66A240'] as const;
 
 /**
- * Home's hero, in the prototype's composition: the field photo, the date
- * and barangay as pills, the big figure, and a row of cards for what is
- * on the land. The prototype's temperature becomes the season's earnings, the
- * number farmers asked for; weather joins in step 8.
+ * Home's hero, laid out as the prototype's: a row with the big figure on the
+ * left and two lines on the right, pills beneath, then a row of cards. The
+ * prototype's temperature becomes the season's earnings, its weather lines
+ * become sold and spent, its pills are the date and barangay, and its
+ * schedule cards are what is planted now. Weather joins in step 8.
  */
 export function HomeHero({
   season,
@@ -37,18 +43,15 @@ export function HomeHero({
 
   return (
     <PhotoHero source={HERO_PHOTO}>
-      <View style={styles.chips}>
-        <Chip tone="onCard" icon={CalendarDays} label={formatDateLong(todayLocal(), language)} />
-        {barangay ? <Chip tone="onCard" icon={MapPin} label={barangay} /> : null}
-      </View>
-
-      <View style={styles.text}>
-        <Text tone="onBrand">{t('homeEarningsLabel')}</Text>
-        <Text variant="display" tone="onBrand" numeric>
-          {formatPesos(season.netCentavos)}
-        </Text>
+      <View style={styles.figureRow}>
+        <View style={styles.figure}>
+          <Text tone="onBrand">{t('homeEarningsLabel')}</Text>
+          <Text variant="display" tone="onBrand" numeric>
+            {formatPesos(season.netCentavos)}
+          </Text>
+        </View>
         {hasMoney ? (
-          <View style={styles.split}>
+          <View style={styles.side}>
             <Text tone="onBrand" numeric>
               {t('homeSold')} {formatPesos(season.revenueCentavos)}
             </Text>
@@ -56,16 +59,23 @@ export function HomeHero({
               {t('homeSpent')} {formatPesos(season.expenseCentavos)}
             </Text>
           </View>
-        ) : (
-          <Text tone="onBrand">{t('homeEarningsEmpty')}</Text>
-        )}
+        ) : null}
+      </View>
+      {hasMoney ? null : (
+        <Text tone="onBrand" style={styles.inset}>
+          {t('homeEarningsEmpty')}
+        </Text>
+      )}
+
+      <View style={[styles.chips, styles.inset]}>
+        <Chip tone="onCard" icon={CalendarDays} label={formatDateLong(todayLocal(), language)} />
+        {barangay ? <Chip tone="onCard" icon={MapPin} label={barangay} /> : null}
       </View>
 
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         accessibilityLabel={t('heroPlantings')}
-        style={styles.rail}
         contentContainerStyle={styles.cards}
       >
         {cycles.length ? (
@@ -73,8 +83,9 @@ export function HomeHero({
             <HeroCard
               key={cycle.id}
               featured={index === 0}
-              title={cropName(cycle, language)}
-              subtitle={cycle.plotName}
+              icon={Clock}
+              meta={t('plotPlanted', { date: formatDate(cycle.plantedOn, language) })}
+              title={`${cropName(cycle, language)}, ${cycle.plotName}`}
               status={statusLabel(t, cycle.status)}
               onPress={() => router.push(`/plot/${cycle.plotId}`)}
             />
@@ -82,9 +93,9 @@ export function HomeHero({
         ) : (
           <HeroCard
             featured
-            icon="add"
+            icon={Plus}
+            meta={t('heroPlantings')}
             title={t('noCycleAction')}
-            subtitle={t('heroPlantings')}
             onPress={() =>
               router.push({ pathname: '/record/[kind]', params: { kind: 'planting' } })
             }
@@ -96,74 +107,108 @@ export function HomeHero({
 }
 
 /**
- * One card in the hero's rail: the prototype's task cards, here a planting.
- * The first is the green one, the rest white, as in the design.
+ * One of the prototype's schedule cards: a small icon line, a title, and a
+ * status pill at the bottom. The first is the green one, the rest white.
  */
 function HeroCard({
+  icon: Icon,
+  meta,
   title,
-  subtitle,
   status,
   featured,
-  icon = 'crop',
   onPress,
 }: {
+  icon: typeof Clock;
+  meta: string;
   title: string;
-  subtitle: string;
   status?: string;
   featured: boolean;
-  icon?: 'crop' | 'add';
   onPress: () => void;
 }) {
   const tone = featured ? 'onBrand' : 'default';
-  const Icon = icon === 'add' ? Plus : Sprout;
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={[title, subtitle, status].filter(Boolean).join(', ')}
+      accessibilityLabel={[title, meta, status].filter(Boolean).join(', ')}
       style={({ pressed }) => [
         styles.card,
-        featured ? styles.featured : styles.plain,
+        featured ? null : styles.plain,
         pressed && styles.pressed,
       ]}
     >
       {featured ? (
         <LinearGradient
-          colors={gradient.brand}
-          start={{ x: 0, y: 0 }}
+          colors={FEATURED}
+          start={{ x: 0.1, y: 0.1 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
       ) : null}
-      <Icon size={20} color={featured ? color.textOnBrand : color.accent} strokeWidth={2} />
-      <Text variant="bodyStrong" tone={tone} numberOfLines={2}>
-        {title}
-      </Text>
-      <Text tone={featured ? 'onBrand' : 'muted'} numberOfLines={2}>
-        {subtitle}
-      </Text>
-      {status ? <Chip tone={featured ? 'onCard' : 'default'} label={status} /> : null}
+      <View style={styles.cardTop}>
+        <View style={styles.meta}>
+          <Icon size={12} color={featured ? color.textOnBrand : color.text} />
+          <Text variant="label" tone={tone} numberOfLines={1} style={styles.flex}>
+            {meta}
+          </Text>
+        </View>
+        <Text tone={tone} numberOfLines={3}>
+          {title}
+        </Text>
+      </View>
+      {status ? (
+        <View style={[styles.status, featured ? styles.statusOnGreen : styles.statusOnWhite]}>
+          <Text variant="label" tone="accent">
+            {status}
+          </Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  text: { gap: space.xs },
-  split: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.xs },
+  inset: { paddingHorizontal: space.xl },
+  figureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.md,
+    paddingHorizontal: space.xl,
+  },
+  figure: { flexShrink: 1 },
+  side: { alignItems: 'flex-end', gap: space.xs },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  // The rail scrolls under the screen edges, like the prototype's cut-off third card.
-  rail: { marginHorizontal: layout.bleed },
-  cards: { gap: space.md, paddingHorizontal: layout.screenPadding },
+  cards: {
+    gap: space.sm,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+  },
   card: {
     width: CARD_WIDTH,
-    minHeight: layout.minTouch,
-    padding: space.md,
-    gap: space.xs,
-    borderRadius: radius.lg,
-    alignItems: 'flex-start',
+    minHeight: CARD_HEIGHT,
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    borderRadius: radius.card,
+    justifyContent: 'space-between',
+    gap: space.sm,
     overflow: 'hidden',
   },
-  featured: { backgroundColor: color.brand },
-  plain: { backgroundColor: color.surface },
-  pressed: { opacity: 0.8 },
+  plain: {
+    backgroundColor: color.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: color.border,
+  },
+  pressed: { opacity: 0.85 },
+  cardTop: { gap: space.sm },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  flex: { flex: 1 },
+  status: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: space.sm,
+    paddingVertical: space.xs,
+    borderRadius: radius.pill,
+  },
+  statusOnGreen: { backgroundColor: color.surface },
+  statusOnWhite: { backgroundColor: color.background },
 });

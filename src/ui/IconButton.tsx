@@ -26,7 +26,7 @@ export function IconButton({ icon: Icon, label, onPress, badge }: IconButtonProp
       accessibilityLabel={label}
       style={({ pressed }) => [styles.circle, pressed && styles.pressed]}
     >
-      <Icon size={22} color={color.text} strokeWidth={1.75} />
+      <Icon size={22} color={color.text} />
       {badge ? <View style={styles.badge} /> : null}
     </Pressable>
   );

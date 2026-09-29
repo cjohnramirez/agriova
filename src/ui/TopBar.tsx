@@ -27,7 +27,7 @@ export function TopBar({ greeting, name, onPressAvatar, avatarLabel, actions }: 
         style={styles.who}
       >
         <View style={styles.avatar}>
-          <UserRound size={24} color={color.text} strokeWidth={1.75} />
+          <UserRound size={24} color={color.text} />
         </View>
         <View style={styles.names}>
           <Text variant="label" tone="muted" numberOfLines={1}>

@@ -32,7 +32,7 @@ export default function Assistant() {
     <TabScreen showRecord={false}>
       <View style={styles.greeting}>
         <View style={styles.badge}>
-          <Bot size={36} color={color.accent} strokeWidth={1.75} />
+          <Bot size={36} color={color.accent} />
         </View>
         <Text variant="title" accessibilityRole="header">
           {t('assistantGreeting')}

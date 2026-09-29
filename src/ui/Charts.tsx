@@ -6,7 +6,9 @@ import { color } from '@/theme/tokens';
 import { buildSmoothLine, buildSteps, type Box } from './chartMath';
 
 const PAD = 8;
-const MARKER = 6;
+const MARKER = 5;
+/** Space between two periods, so each reads as its own bar, as in the prototype. */
+const STEP_GAP = 3;
 
 /** Measures its own width, so charts fill whatever card they sit in. */
 function useWidth() {
@@ -22,8 +24,11 @@ type ChartProps = {
   accessibilityLabel: string;
 };
 
-/** The stepped finance chart from the Dashboard. Falling periods turn red. */
-export function StepChart({ values, height = 96, accessibilityLabel }: ChartProps) {
+/**
+ * The stepped finance chart from the Dashboard: one short bar per period with
+ * a gap between, falling periods in orange, a ring on the latest.
+ */
+export function StepChart({ values, height = 64, accessibilityLabel }: ChartProps) {
   const { width, onLayout } = useWidth();
   const box: Box = { width, height, pad: PAD };
   const steps = width ? buildSteps(values, box) : [];
@@ -42,23 +47,23 @@ export function StepChart({ values, height = 96, accessibilityLabel }: ChartProp
           {steps.map((s) => (
             <Line
               key={s.x1}
-              x1={s.x1 + 2}
-              x2={s.x2 - 2}
+              x1={s.x1 + STEP_GAP}
+              x2={s.x2 - STEP_GAP}
               y1={s.y}
               y2={s.y}
-              stroke={s.falling ? color.dangerGlow : color.accent}
-              strokeWidth={3}
-              strokeLinecap="round"
+              stroke={s.falling ? color.loss : color.accent}
+              strokeWidth={2}
+              strokeLinecap="butt"
             />
           ))}
           {last ? (
             <Circle
-              cx={last.x2 - MARKER}
+              cx={last.x2 - STEP_GAP - MARKER * 2}
               cy={last.y}
               r={MARKER}
               fill={color.surface}
               stroke={color.accent}
-              strokeWidth={2.5}
+              strokeWidth={2}
             />
           ) : null}
         </Svg>

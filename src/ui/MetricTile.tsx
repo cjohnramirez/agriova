@@ -30,7 +30,7 @@ export function MetricTile({ label, value, caption, icon: Icon }: MetricTileProp
           <Text variant="bodyStrong" style={styles.label}>
             {label}
           </Text>
-          {Icon ? <Icon size={22} color={color.accent} strokeWidth={1.75} /> : null}
+          {Icon ? <Icon size={22} color={color.accent} /> : null}
         </View>
         <Text variant="figure" numeric>
           {value}

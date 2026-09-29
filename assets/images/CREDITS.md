@@ -2,4 +2,4 @@
 
 | File | Source | License |
 | --- | --- | --- |
-| `hero-field.jpg` | Rice paddies on Biliran Island, Philippines, by Ulf Sandström. <https://unsplash.com/photos/idEXffndW1E> | [Unsplash License](https://unsplash.com/license): free for commercial use, no attribution required. Credited here anyway. |
+| `hero-field.jpg` | The hero photo from the Figma "Unified Design" prototype (Dashboard frame), cropped to the band the frame shows. | **Unknown.** Confirm where this photo came from and that it may be used commercially before the store release; if not, swap in a free-licensed one (Unsplash, Pexels). |

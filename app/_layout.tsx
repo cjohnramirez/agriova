@@ -1,14 +1,9 @@
-import {
-  Geist_400Regular,
-  Geist_500Medium,
-  Geist_600SemiBold,
-  Geist_700Bold,
-  useFonts,
-} from '@expo-google-fonts/geist';
+import { Geist_300Light, Geist_400Regular, useFonts } from '@expo-google-fonts/geist';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { LucideProvider } from 'lucide-react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -24,24 +19,25 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    Geist_300Light,
     Geist_400Regular,
-    Geist_500Medium,
-    Geist_600SemiBold,
-    Geist_700Bold,
   });
   if (!fontsLoaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <I18nProvider>
-          <StatusBar style="dark" />
-          <DatabaseGate>
-            <SessionProvider>
-              <RootStack />
-            </SessionProvider>
-          </DatabaseGate>
-        </I18nProvider>
+        {/* Every icon one hairline thick, as in the prototype, whatever its size. */}
+        <LucideProvider strokeWidth={1} absoluteStrokeWidth>
+          <I18nProvider>
+            <StatusBar style="dark" />
+            <DatabaseGate>
+              <SessionProvider>
+                <RootStack />
+              </SessionProvider>
+            </DatabaseGate>
+          </I18nProvider>
+        </LucideProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

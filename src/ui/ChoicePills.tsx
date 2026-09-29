@@ -43,7 +43,7 @@ export function ChoicePills<K extends string>({
               pressed && !isOn && styles.pressed,
             ]}
           >
-            {isOn ? <Check size={20} color={color.textOnBrand} strokeWidth={2.5} /> : null}
+            {isOn ? <Check size={20} color={color.textOnBrand} /> : null}
             <Text variant="bodyStrong" tone={isOn ? 'onBrand' : 'default'}>
               {option.label}
             </Text>
