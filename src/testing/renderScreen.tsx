@@ -14,8 +14,9 @@ export const TEST_OWNER = 'owner-1';
  * migration applied, optionally holding the sample farm. The screen runs its
  * real queries; only the router and the session are mocked, in each test file.
  *
- * `changed()` plays the device's change listener, for tests that write and
- * then expect the screen to update.
+ * Writes the screen makes through `useWriter` announce themselves, as the
+ * device's change listener does, so the screen updates on its own. Writes a
+ * test makes directly need `changed()`.
  */
 export async function renderScreen(ui: ReactElement, { farm = true } = {}) {
   const db = openTestDb();
@@ -25,10 +26,18 @@ export async function renderScreen(ui: ReactElement, { farm = true } = {}) {
   if (farm) seedDemoFarm(runnerFor(db), TEST_OWNER, todayLocal(), uuid);
 
   const listeners = new Set<() => void>();
+  const notify = () => listeners.forEach((listener) => listener());
+  const base = runnerFor(db);
   let tick = Date.now();
   const source: DataSource = {
     reader: readerFor(db),
-    writer: runnerFor(db),
+    writer: {
+      ...base,
+      run: (sql, params) => {
+        base.run(sql, params);
+        queueMicrotask(notify);
+      },
+    },
     clock: { now: () => ++tick, uuid },
     subscribe: (onChange) => {
       listeners.add(onChange);
@@ -46,6 +55,6 @@ export async function renderScreen(ui: ReactElement, { farm = true } = {}) {
     db,
     runner: runnerFor(db),
     uuid,
-    changed: () => act(() => listeners.forEach((listener) => listener())),
+    changed: () => act(notify),
   };
 }

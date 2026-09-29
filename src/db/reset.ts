@@ -8,6 +8,7 @@
  */
 export const RESET_LOCAL_DATA_SQL = `
   delete from outbox;
+  delete from chat_message;
   delete from sale;
   delete from harvest;
   delete from expense;

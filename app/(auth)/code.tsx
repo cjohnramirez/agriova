@@ -31,7 +31,9 @@ export default function Code() {
       setError(
         cause instanceof AuthError && cause.reason === 'wrongCode'
           ? t('loginWrongCode')
-          : t('loginSendFailed'),
+          : // The check may have reached the server and used the code up, so a
+            // retry with the same code would fail; point to a new one instead.
+            t('loginCheckFailed'),
       );
       setBusy(false);
     }

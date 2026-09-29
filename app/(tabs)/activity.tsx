@@ -8,11 +8,13 @@ import { useLiveQuery } from '@/db/live';
 import { ledger, type LedgerKind } from '@/db/read';
 import { addDays, todayLocal } from '@/db/units';
 import { LedgerList } from '@/features/LedgerList';
+import { useAdvice } from '@/features/useAdvice';
 import { useI18n } from '@/i18n';
 import { formatDateLong, formatMonthYear, weekOf } from '@/i18n/dates';
+import { describeAdvice } from '@/i18n/labels';
 import { TabScreen } from '@/shell/TabScreen';
 import { space } from '@/theme/tokens';
-import { Button, EmptyState, FilterPills, IconButton, Text, WeekStrip } from '@/ui';
+import { AlertCard, Button, EmptyState, FilterPills, IconButton, Text, WeekStrip } from '@/ui';
 
 type Filter = 'all' | LedgerKind;
 
@@ -28,6 +30,7 @@ export default function Activity() {
   const today = todayLocal();
   const [day, setDay] = useState(today);
   const [filter, setFilter] = useState<Filter>('all');
+  const advice = useAdvice();
 
   const entries = useLiveQuery(
     (db) =>
@@ -72,6 +75,14 @@ export default function Activity() {
           { key: 'sale', label: t('recordSale') },
         ]}
       />
+
+      {/* The prototype's AI cards: today's advice, from rules on the phone. */}
+      {day === today
+        ? advice.map((item) => {
+            const { title, body } = describeAdvice(t, language, item);
+            return <AlertCard key={item.id} kind={item.kind} title={title} body={body} />;
+          })
+        : null}
 
       {entries.length ? (
         <View style={styles.day}>

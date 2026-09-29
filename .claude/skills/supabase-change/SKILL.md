@@ -50,4 +50,10 @@ dropped or rejected, and a farmer's record never reaches their other phone.
   `npm run db:start` first). CI's `Database` workflow runs the same on every
   change under `supabase/`.
 - John applies migrations to the hosted project with `npm run db:push` after
-  `npx supabase link`. Hand him the command; do not push schema yourself.
+  `npx supabase link`. Hand him the command; do not push schema yourself. On
+  networks that block Postgres ports, give him the migration as a SQL Editor
+  paste that also inserts its row into `supabase_migrations.schema_migrations`.
+- Edge Functions live in `supabase/functions/<name>/`: pure logic in
+  `core.ts` (tested by Jest), the Deno entry in `index.ts`. John deploys with
+  `npx supabase functions deploy <name> --use-api` and sets secrets with
+  `npx supabase secrets set NAME=value`; keys never go in the app.

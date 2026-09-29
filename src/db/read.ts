@@ -375,3 +375,24 @@ export function harvestByCrop(db: SqlReader, ownerId: string) {
     [ownerId],
   );
 }
+
+/**
+ * What the farmer has been getting per unit for each crop, weighted by
+ * quantity, over the last `days`. For the assistant's "when and where to
+ * sell" answers; one row per crop and unit.
+ */
+export function salePrices(db: SqlReader, ownerId: string, since: string) {
+  return db.all<CropName & { unit: Unit; sales: number; avgCentavos: number }>(
+    `select cr.name_bis as cropBis, cr.name_en as cropEn, h.unit,
+            count(*) as sales,
+            cast(round(sum(s.total_centavos) * 1000.0 / sum(s.quantity_milli)) as integer) as avgCentavos
+     from sale s
+     join harvest h on h.id = s.harvest_id
+     join cycle c on c.id = h.cycle_id
+     join crop cr on cr.id = c.crop_id
+     where s.owner_id = ? and s.deleted_at is null and h.deleted_at is null and s.sold_on >= ?
+     group by cr.id, h.unit
+     order by sales desc`,
+    [ownerId, since],
+  );
+}

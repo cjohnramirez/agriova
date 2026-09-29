@@ -60,9 +60,12 @@ export function useLiveQuery<T>(read: (db: SqlReader) => T, deps: DependencyList
   return useMemo(() => read(source.reader), [source, version, key]);
 }
 
-/** The database and clock for the write helpers in `write.ts`. */
+/**
+ * The database and clock for the write helpers in `write.ts`. The same object
+ * across renders, so it is safe in effect and callback dependencies.
+ */
 export function useWriter(): { db: SqlDb; clock: Clock } {
   const source = useContext(DataSourceContext);
   if (!source) throw new Error('useWriter must be used inside DataSourceProvider');
-  return { db: source.writer, clock: source.clock };
+  return useMemo(() => ({ db: source.writer, clock: source.clock }), [source]);
 }

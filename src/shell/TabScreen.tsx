@@ -5,7 +5,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSession } from '@/auth/SessionProvider';
-import { useProduceOnHand } from '@/features/useProduceOnHand';
+import { useAdvice } from '@/features/useAdvice';
 import { useI18n } from '@/i18n';
 import { color, layout, radius, space } from '@/theme/tokens';
 import { IconButton, Screen, Text, TopBar } from '@/ui';
@@ -21,8 +21,8 @@ export function TabScreen({ children, showRecord = true }: TabScreenProps) {
   const { t } = useI18n();
   const router = useRouter();
   const { session } = useSession();
-  // The bell shows a dot while any produce is close to spoiling.
-  const hasAlerts = useProduceOnHand().some((item) => item.level !== 'fresh');
+  // The bell shows a dot while any advice needs acting on.
+  const hasAlerts = useAdvice().some((item) => item.kind !== 'approve');
 
   return (
     <View style={styles.flex}>

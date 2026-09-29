@@ -45,6 +45,8 @@ const en = {
   loginInvalidCode: 'The code must be 6 digits.',
   loginSendFailed: 'The code could not be sent. Check your signal and try again.',
   loginWrongCode: 'That code is not right, or it has expired.',
+  loginCheckFailed:
+    'The code could not be checked. Check your signal, then tap Send the code again for a new one.',
   loginCodeResent: 'A new code is on its way.',
 
   profileTitle: 'Tell us about you',
@@ -96,6 +98,26 @@ const en = {
   produceItem: '{quantity} {crop}',
   sellSoonTitle: 'Sell soon',
   sellSoonBody: '{quantity} {crop} from {plot}. {countdown}.',
+
+  adviceTitle: 'Today’s advice',
+  adviceSubtitle: 'From your records and the weather. Works without signal.',
+  adviceHeatDangerTitle: 'Dangerous heat today',
+  adviceHeatDangerBody:
+    'From {start} to {end} it will feel like {max}°C. Avoid field work and spraying then; rest in the shade and drink water.',
+  adviceHeatTitle: 'Hot hours today',
+  adviceHeatBody:
+    'It will feel like {max}°C from {start} to {end}. Work early in the morning or late in the afternoon.',
+  adviceRainTitle: 'Rain likely',
+  adviceRainBody:
+    'Rain is likely from {start} ({chance}%). Hold off spraying and fertilizer until after.',
+  adviceClearTitle: 'Good day for field work',
+  adviceClearBody: 'No heat or rain warnings for today.',
+  adviceSellBody: '{crop} from {plot}: {countdown}. Find a buyer now.',
+  skyClear: 'Clear',
+  skyCloudy: 'Cloudy',
+  skyFog: 'Foggy',
+  skyRain: 'Rain',
+  skyStorm: 'Thunderstorm',
 
   metricPlots: 'Plots',
   metricArea: 'Total size',
@@ -159,6 +181,10 @@ const en = {
   assistantInputPlaceholder: 'Type your question here',
   assistantSend: 'Send',
   assistantNotYet: 'The assistant is not connected yet. Your question is kept here.',
+  assistantWaiting: 'Waiting for signal. It will send by itself.',
+  assistantThinking: 'Thinking…',
+  assistantLimit: 'You have asked 20 questions today. Please ask again tomorrow.',
+  assistantFailed: 'The assistant could not answer that. Please try asking again.',
 
   shopTitle: 'Farm shop',
   shopSubtitle: 'Seeds, fertilizer and tools from sellers near you.',
@@ -254,7 +280,6 @@ const en = {
 
   notificationsTitle: 'Notifications',
   notificationsEmpty: 'No notifications yet.',
-  notificationsSellTitle: 'Sell your {crop}',
 
   devSampleFarm: 'Load a sample farm',
 } as const;
@@ -290,6 +315,8 @@ const bis: Catalog = {
   loginInvalidCode: 'Ang code kinahanglan 6 ka numero.',
   loginSendFailed: 'Wala naipadala ang code. Tan-awa ang signal ug sulayi pag-usab.',
   loginWrongCode: 'Sayop ang code, o na-expire na.',
+  loginCheckFailed:
+    'Wala masusi ang code. Tan-awa ang signal, dayon pindota ang Ipadala usab ang code para sa bag-o.',
   loginCodeResent: 'Gipadala na ang bag-ong code.',
 
   profileTitle: 'Isulti bahin nimo',
@@ -341,6 +368,25 @@ const bis: Catalog = {
   produceItem: '{quantity} nga {crop}',
   sellSoonTitle: 'Ibaligya dayon',
   sellSoonBody: '{quantity} nga {crop} gikan sa {plot}. {countdown}.',
+
+  adviceTitle: 'Tambag karong adlawa',
+  adviceSubtitle: 'Gikan sa imong natala ug sa panahon. Mogana bisan walay signal.',
+  adviceHeatDangerTitle: 'Delikado nga kainit karon',
+  adviceHeatDangerBody:
+    'Gikan {start} hangtod {end}, mobati og {max}°C. Ayaw pag-trabaho sa uma o pag-spray niadtong orasa; pahulay sa landong ug inom og tubig.',
+  adviceHeatTitle: 'Init nga mga oras karon',
+  adviceHeatBody:
+    'Mobati og {max}°C gikan {start} hangtod {end}. Pag-trabaho sayo sa buntag o sa hapon na.',
+  adviceRainTitle: 'Basin mouwan',
+  adviceRainBody: 'Basin mouwan gikan {start} ({chance}%). Ayaw una pag-spray o pag-abono.',
+  adviceClearTitle: 'Maayong adlaw sa pag-uma',
+  adviceClearBody: 'Walay pasidaan sa kainit o ulan karon.',
+  adviceSellBody: '{crop} gikan sa {plot}: {countdown}. Pangitag mamalit karon.',
+  skyClear: 'Hayag',
+  skyCloudy: 'Dag-om',
+  skyFog: 'Gabon',
+  skyRain: 'Ulan',
+  skyStorm: 'Dalugdog',
 
   metricPlots: 'Luna',
   metricArea: 'Tibuok gidak-on',
@@ -404,6 +450,10 @@ const bis: Catalog = {
   assistantInputPlaceholder: 'Isulat dinhi ang imong pangutana',
   assistantSend: 'Ipadala',
   assistantNotYet: 'Wala pa makonektar ang katabang. Natipigan dinhi ang imong pangutana.',
+  assistantWaiting: 'Naghulat og signal. Ipadala ra ni kusa.',
+  assistantThinking: 'Naghunahuna…',
+  assistantLimit: 'Nakapangutana ka na og 20 karon. Pangutana na usab ugma.',
+  assistantFailed: 'Wala makatubag ang katabang niana. Palihug pangutana pag-usab.',
 
   shopTitle: 'Tindahan sa uma',
   shopSubtitle: 'Binhi, abono ug gamit gikan sa duol nga tindera.',
@@ -499,7 +549,6 @@ const bis: Catalog = {
 
   notificationsTitle: 'Mga pahibalo',
   notificationsEmpty: 'Wala pay pahibalo.',
-  notificationsSellTitle: 'Ibaligya ang imong {crop}',
 
   devSampleFarm: 'Ibutang ang sampol nga uma',
 };

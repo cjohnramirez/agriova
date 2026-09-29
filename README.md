@@ -60,8 +60,10 @@ drizzle/        Generated SQL migrations (`npm run db:generate`)
 ## Status
 
 Done: design system, onboarding, all tabs on local data, record forms,
-Supabase schema with row level security, email sign-in, sync.
-Next: the AI assistant, then store release.
+Supabase schema with row level security, email sign-in, sync, and the farm
+assistant: weather and spoilage advice worked out on the phone, plus a chat
+(Gemini, through the `ai-chat` Edge Function in `supabase/functions/`).
+Next: store release.
 
 Sign-in is by a 6-digit code sent to an email address (Supabase Auth, sent
 through Mailjet). Without Supabase keys in `.env.local` (see `.env.example`)

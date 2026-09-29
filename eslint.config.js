@@ -8,6 +8,15 @@ module.exports = defineConfig([
   // Last, so formatting is Prettier's call and never a lint error.
   prettierConfig,
   {
-    ignores: ['dist/*', 'android/*', 'ios/*', 'coverage/*', '.expo/*', 'drizzle/*'],
+    // Edge Function entry points run on Deno (npm: imports, Deno globals).
+    ignores: [
+      'dist/*',
+      'android/*',
+      'ios/*',
+      'coverage/*',
+      '.expo/*',
+      'drizzle/*',
+      'supabase/functions/**/index.ts',
+    ],
   },
 ]);

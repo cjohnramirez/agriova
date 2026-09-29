@@ -1,6 +1,8 @@
 import { cropName, type LedgerEntry } from '@/db/read';
 import type { CycleStatus, ExpenseCategory, SaleChannel } from '@/db/schema';
 import { formatPesos, formatQuantity } from '@/db/units';
+import type { Advice } from '@/rules/advice';
+import type { Sky } from '@/weather/forecast';
 
 import type { Translate } from './index';
 import type { Language, StringKey } from './strings';
@@ -77,4 +79,30 @@ export function describeEntry(t: Translate, language: Language, entry: LedgerEnt
         value: formatQuantity(entry.quantityMilli ?? 0, entry.unit ?? 'kg', language),
       };
   }
+}
+
+const SKY: Record<Sky, StringKey> = {
+  clear: 'skyClear',
+  cloudy: 'skyCloudy',
+  fog: 'skyFog',
+  rain: 'skyRain',
+  storm: 'skyStorm',
+};
+
+export const skyLabel = (t: Translate, sky: Sky) => t(SKY[sky]);
+
+/**
+ * An advice card's title and body as sentences. Weather advice carries its
+ * values ready to print; produce advice carries both crop names and a day
+ * count, which become the language's crop name and countdown here.
+ */
+export function describeAdvice(t: Translate, language: Language, advice: Advice) {
+  const vars = advice.id.startsWith('produce-')
+    ? {
+        crop: language === 'bis' ? advice.vars.cropBis : advice.vars.cropEn,
+        plot: advice.vars.plot,
+        countdown: countdownLabel(t, Number(advice.vars.days)),
+      }
+    : advice.vars;
+  return { title: t(advice.title), body: t(advice.body, vars) };
 }

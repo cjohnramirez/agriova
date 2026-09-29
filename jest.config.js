@@ -11,7 +11,8 @@ module.exports = {
       // migration can run against node:sqlite.
       displayName: 'logic',
       testEnvironment: 'node',
-      testMatch: ['<rootDir>/src/**/*.test.ts'],
+      // Also the Edge Functions' pure logic, which has no Deno imports.
+      testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/supabase/functions/**/*.test.ts'],
       moduleNameMapper,
     },
     {

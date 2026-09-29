@@ -18,6 +18,7 @@ import { formatDateLong } from '@/i18n/dates';
 import { ShopBrowser } from '@/shop/ShopBrowser';
 import type { Listing } from '@/shop/listings';
 import { renderScreen, TEST_OWNER } from '@/testing/renderScreen';
+import type { Forecast } from '@/weather/forecast';
 
 const mockRouter = {
   push: jest.fn(),
@@ -26,6 +27,28 @@ const mockRouter = {
   canGoBack: () => true,
 };
 const mockParams: { id?: string } = {};
+
+/** The cached forecast the screens see; null unless a test sets one. Never the network. */
+const mockWeather: { forecast: Forecast | null } = { forecast: null };
+jest.mock('@/weather/useForecast', () => ({ useForecast: () => mockWeather.forecast }));
+
+/** Today, with a feels-like peak of `peak`°C around 1 PM. */
+function hotDay(peak: number): Forecast {
+  const today = todayLocal();
+  return {
+    fetchedAt: Date.now(),
+    current: { temp: 33, sky: 'clear' },
+    hours: Array.from({ length: 24 }, (_, h) => ({
+      time: `${today}T${String(h).padStart(2, '0')}:00`,
+      temp: 32,
+      feelsLike: Math.round(peak - Math.abs(13 - h) * 2.5),
+      rainChance: 0,
+    })),
+  };
+}
+
+// Keyless, as in CI: the assistant has no server to reach.
+jest.mock('@/backend/supabase', () => ({ supabase: null }));
 
 jest.mock('expo-router', () => ({
   useRouter: () => mockRouter,
@@ -46,7 +69,10 @@ jest.mock(
   () => jest.requireActual('react-native-safe-area-context/jest/mock').default,
 );
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockWeather.forecast = null;
+});
 
 describe('Home', () => {
   it('leads with the season’s earnings', async () => {
@@ -172,9 +198,9 @@ describe('Assistant', () => {
       screen.getByRole('button', { name: 'Suggestion. When should I sell my tomatoes?' }),
     );
     await fireEvent.press(screen.getByRole('button', { name: 'Send' }));
-    expect(screen.getByText('When should I sell my tomatoes?')).toBeOnTheScreen();
+    expect(await screen.findByText('When should I sell my tomatoes?')).toBeOnTheScreen();
     expect(
-      screen.getByText('The assistant is not connected yet. Your question is kept here.'),
+      await screen.findByText('The assistant is not connected yet. Your question is kept here.'),
     ).toBeOnTheScreen();
   });
 
@@ -184,10 +210,35 @@ describe('Assistant', () => {
   });
 });
 
+describe('Weather advice', () => {
+  it('warns on Activity of dangerous heat, with the hours', async () => {
+    mockWeather.forecast = hotDay(44);
+    await renderScreen(<Activity />, { farm: false });
+    expect(screen.getByText('Dangerous heat today')).toBeOnTheScreen();
+    expect(screen.getByText(/From 9 AM to 6 PM it will feel like 44°C/)).toBeOnTheScreen();
+  });
+
+  it('lists the heat warning with produce in Notifications', async () => {
+    mockWeather.forecast = hotDay(44);
+    await renderScreen(<Notifications />);
+    expect(screen.getByText('Dangerous heat today')).toBeOnTheScreen();
+    expect(screen.getByText('Sell soon')).toBeOnTheScreen();
+  });
+
+  it('shows the weather in the hero', async () => {
+    mockWeather.forecast = hotDay(35);
+    await renderScreen(<Home />);
+    expect(screen.getByText('33°C · Clear')).toBeOnTheScreen();
+  });
+});
+
 describe('Notifications', () => {
   it('lists produce close to spoiling', async () => {
     await renderScreen(<Notifications />);
-    expect(screen.getByText('Sell your Tomato')).toBeOnTheScreen();
+    expect(screen.getByText('Sell soon')).toBeOnTheScreen();
+    expect(
+      screen.getByText('Tomato from Duol sa suba: 2 days left. Find a buyer now.'),
+    ).toBeOnTheScreen();
   });
 
   it('is empty with nothing on hand', async () => {

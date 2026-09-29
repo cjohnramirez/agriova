@@ -44,6 +44,8 @@ const CYCLE_STATUSES = ['growing', 'harvested', 'closed'] as const;
 const SALE_CHANNELS = ['marketplace', 'middleman', 'direct'] as const;
 const QUALITIES = ['good', 'fair', 'poor'] as const;
 const OUTBOX_OPS = ['insert', 'update', 'delete'] as const;
+const CHAT_ROLES = ['farmer', 'assistant'] as const;
+const CHAT_STATUSES = ['pending', 'answered', 'note'] as const;
 
 /** Builds a CHECK expression pinning a column to a fixed set of values. */
 function oneOf(column: string, values: readonly string[]) {
@@ -276,6 +278,33 @@ export const outbox = sqliteTable(
   ],
 );
 
+/**
+ * The farm assistant conversation. Kept on this phone only and never synced:
+ * each question travels to the assistant with a summary of the records, but
+ * the conversation itself is not stored on the server.
+ *
+ * A farmer's question is `pending` until it has been answered, which is how
+ * a question asked with no signal gets sent later. Assistant rows are
+ * `answered` for a real reply and `note` for the app's own message, such as
+ * the daily limit.
+ */
+export const chatMessage = sqliteTable(
+  'chat_message',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    role: text('role', { enum: CHAT_ROLES }).notNull(),
+    text: text('text').notNull(),
+    status: text('status', { enum: CHAT_STATUSES }).notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('chat_message_owner_idx').on(table.ownerId, table.createdAt),
+    check('chat_message_role_check', oneOf('role', CHAT_ROLES)),
+    check('chat_message_status_check', oneOf('status', CHAT_STATUSES)),
+  ],
+);
+
 /** Per-table high water mark for incremental pulls. */
 export const syncState = sqliteTable('sync_state', {
   tableName: text('table_name').primaryKey(),
@@ -336,4 +365,5 @@ export type Expense = typeof expense.$inferSelect;
 export type Harvest = typeof harvest.$inferSelect;
 export type Sale = typeof sale.$inferSelect;
 export type OutboxEntry = typeof outbox.$inferSelect;
+export type ChatMessage = typeof chatMessage.$inferSelect;
 export type CyclePnl = typeof cyclePnl.$inferSelect;

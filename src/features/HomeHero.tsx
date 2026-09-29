@@ -1,6 +1,17 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { CalendarDays, Clock, MapPin, Plus } from 'lucide-react-native';
+import {
+  CalendarDays,
+  Clock,
+  Cloud,
+  CloudFog,
+  CloudLightning,
+  CloudRain,
+  MapPin,
+  Plus,
+  Sun,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useSession } from '@/auth/SessionProvider';
@@ -8,9 +19,19 @@ import { cropName, type CycleSummary, type SeasonTotals } from '@/db/read';
 import { formatPesos, todayLocal } from '@/db/units';
 import { useI18n } from '@/i18n';
 import { formatDate, formatDateLong } from '@/i18n/dates';
-import { statusLabel } from '@/i18n/labels';
+import { skyLabel, statusLabel } from '@/i18n/labels';
 import { color, radius, space } from '@/theme/tokens';
 import { Chip, PhotoHero, Text } from '@/ui';
+import type { Sky } from '@/weather/forecast';
+import { useForecast } from '@/weather/useForecast';
+
+const SKY_ICON: Record<Sky, LucideIcon> = {
+  clear: Sun,
+  cloudy: Cloud,
+  fog: CloudFog,
+  rain: CloudRain,
+  storm: CloudLightning,
+};
 
 const HERO_PHOTO = require('../../assets/images/hero-field.jpg');
 
@@ -40,6 +61,7 @@ export function HomeHero({
   const { session } = useSession();
   const barangay = session?.profile?.barangay;
   const hasMoney = season.revenueCentavos > 0 || season.expenseCentavos > 0;
+  const forecast = useForecast();
 
   return (
     <PhotoHero source={HERO_PHOTO}>
@@ -70,6 +92,13 @@ export function HomeHero({
       <View style={[styles.chips, styles.inset]}>
         <Chip tone="onCard" icon={CalendarDays} label={formatDateLong(todayLocal(), language)} />
         {barangay ? <Chip tone="onCard" icon={MapPin} label={barangay} /> : null}
+        {forecast ? (
+          <Chip
+            tone="onCard"
+            icon={SKY_ICON[forecast.current.sky]}
+            label={`${Math.round(forecast.current.temp)}°C · ${skyLabel(t, forecast.current.sky)}`}
+          />
+        ) : null}
       </View>
 
       <ScrollView

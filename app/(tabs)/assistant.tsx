@@ -1,32 +1,78 @@
 import { Bot, SendHorizontal, Sparkles } from 'lucide-react-native';
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, StyleSheet, View } from 'react-native';
 
+import { useOwnerId } from '@/auth/SessionProvider';
+import { supabase } from '@/backend/supabase';
+import { useLiveQuery, useWriter } from '@/db/live';
+import { todayLocal } from '@/db/units';
+import { addQuestion, answerPending, listChat } from '@/features/chat/chat';
+import { buildFarmSummary } from '@/features/chat/farmSummary';
+import { supabaseSender } from '@/features/chat/sender';
 import { useI18n } from '@/i18n';
 import { TabScreen } from '@/shell/TabScreen';
 import { color, radius, space } from '@/theme/tokens';
 import { Button, ChatBubble, ChoiceCard, Text, TextField } from '@/ui';
 
-type Message = { id: number; text: string };
-
 /**
  * The farm assistant, laid out like the prototype's ERP AI screen: greeting,
- * two suggested questions, then the question box.
+ * two suggested questions, the conversation, then the question box.
  *
- * Not connected yet. Step 8 adds the `ai-chat` Edge Function; until then a
- * question stays on screen with an honest note rather than a made-up answer.
+ * Questions are saved on the phone before they are sent, so one asked with no
+ * signal waits and goes out by itself when the app is next open with signal.
+ * Answers come from the `ai-chat` Edge Function with a summary of the
+ * farmer's own records.
  */
 export default function Assistant() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const ownerId = useOwnerId();
+  const writer = useWriter();
+  const messages = useLiveQuery((db) => listChat(db, ownerId), [ownerId]);
   const [draft, setDraft] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [thinking, setThinking] = useState(false);
+  const running = useRef(false);
+
+  const flush = useCallback(async () => {
+    if (running.current || !ownerId) return;
+    running.current = true;
+    setThinking(true);
+    try {
+      const send = supabaseSender(language, () =>
+        buildFarmSummary(writer.db, ownerId, todayLocal()),
+      );
+      await answerPending(
+        writer.db,
+        ownerId,
+        send,
+        {
+          limit: t('assistantLimit'),
+          // Without Supabase keys there is no assistant to reach at all.
+          failed: supabase ? t('assistantFailed') : t('assistantNotYet'),
+        },
+        writer.clock,
+      );
+    } finally {
+      running.current = false;
+      setThinking(false);
+    }
+  }, [language, ownerId, t, writer]);
+
+  // Anything left waiting goes out on open and each time the app comes back.
+  useEffect(() => {
+    void flush();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void flush();
+    });
+    return () => sub.remove();
+  }, [flush]);
 
   function send(text: string) {
-    const question = text.trim();
-    if (!question) return;
-    setMessages((list) => [...list, { id: list.length + 1, text: question }]);
+    if (!addQuestion(writer.db, ownerId, text, writer.clock)) return;
     setDraft('');
+    void flush();
   }
+
+  const waiting = messages.some((m) => m.role === 'farmer' && m.status === 'pending');
 
   return (
     <TabScreen showRecord={false}>
@@ -55,15 +101,18 @@ export default function Assistant() {
           ))}
         </View>
       ) : (
-        <View style={styles.thread}>
-          {messages.map((message, index) => (
+        <View style={styles.thread} accessibilityLiveRegion="polite">
+          {messages.map((m) => (
             <ChatBubble
-              key={message.id}
-              from="farmer"
-              text={message.text}
-              note={index === messages.length - 1 ? t('assistantNotYet') : undefined}
+              key={m.id}
+              from={m.role}
+              text={m.text}
+              note={m.status === 'pending' && !thinking ? t('assistantWaiting') : undefined}
             />
           ))}
+          {thinking && waiting ? (
+            <ChatBubble from="assistant" text={t('assistantThinking')} />
+          ) : null}
         </View>
       )}
 
